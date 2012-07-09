@@ -1,4 +1,4 @@
 JEDI
 ====
 
-Jaspers Extendable Derric Implementation
+Jaspers Extensible Derric Implementation
