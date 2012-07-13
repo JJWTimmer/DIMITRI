@@ -1,0 +1,31 @@
+format jpeg
+extension jpeg jpg jfif
+
+unit byte
+size 1
+sign false
+type integer
+endian big
+strings ascii
+
+sequence
+  SOI
+  ([APP0JFIF APP0JFXX?] [APP1 APP2?])
+  !(SOI APP0JFIF APP0JFXX EOI)*
+  EOI
+
+structures
+
+SOI {
+  marker: 0xFF, 0xD8;
+}
+
+APP0JFIF {
+  marker: 0xFF, 0xE0;
+  length: size 2;
+  identifier: "JFIF", 0;
+  xdensity: size 2;
+  ydensity: size 2;
+  xthumbnail;
+  ythumbnail;
+}
