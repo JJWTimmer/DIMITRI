@@ -1,4 +1,4 @@
-module lang::dimitri::base::Syntax
+module lang::dimitri::levels::l1::Syntax
 
 lexical CommentChar = ![*] | [*] !>> [/];
 lexical Comment = @category="Comment" "/*" CommentChar* "*/";

@@ -1,4 +1,4 @@
-module lang::dimitri::base::AST
+module lang::dimitri::levels::l1::AST
 
 data Format = format(str name, list[str] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures);
 

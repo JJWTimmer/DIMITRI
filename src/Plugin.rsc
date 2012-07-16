@@ -2,13 +2,13 @@ module Plugin
 
 import IO;
 
-import lang::dimitri::bootstrap::Bootstrap;
-import lang::dimitri::Base;
+import lang::dimitri::levels::Level1;
+
+public str LANG = "Dimitri L1";
+public str EXT  = "dim";
 
 public void main() {
 	println("Loaded Dimitri plugin");
 	
-	registerHost();
-	
-	loadDimitri();
+	registerL1(LANG, EXT);
 }
