@@ -1,4 +1,4 @@
-module lang::jedi::base::Syntax
+module lang::dimitri::base::Syntax
 
 lexical CommentChar = ![*] | [*] !>> [/];
 lexical Comment = @category="Comment" "/*" CommentChar* "*/";

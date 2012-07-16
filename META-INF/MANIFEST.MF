@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JEDI
-Bundle-SymbolicName: JEDI
+Bundle-Name: DIMITRI
+Bundle-SymbolicName: dimitri
 Bundle-Version: 1.0.0
 Require-Bundle: org.eclipse.imp.pdb.values,
  rascal

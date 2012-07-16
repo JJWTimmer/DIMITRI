@@ -1,4 +1,4 @@
-module lang::jedi::base::AST
+module lang::dimitri::base::AST
 
 data Format = format(str name, list[str] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures);
 

@@ -1,4 +1,4 @@
-JEDI
+DIMITRI
 ====
 
-Jaspers Extensible Derric Implementation
+Derric In Modular Implementation To Research Ideas
