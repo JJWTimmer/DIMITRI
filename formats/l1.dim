@@ -1,31 +1,19 @@
-format jpeg
-extension jpeg jpg jfif
+format jasper
+extension jt
 
 unit byte
-size 1
+size 5
 sign false
 type integer
 endian big
 strings ascii
 
 sequence
-  SOI
-  ([APP0JFIF APP0JFXX?] [APP1 APP2?])
-  !(SOI APP0JFIF APP0JFXX EOI)*
-  EOI
+(strt strt*)
 
 structures
-
-SOI {
-  marker: 0xFF, 0xD8;
-}
-
-APP0JFIF {
-  marker: 0xFF, 0xE0;
-  length: size 2;
-  identifier: "JFIF", 0;
-  xdensity: size 2;
-  ydensity: size 2;
-  xthumbnail;
-  ythumbnail;
+strt {
+   a: 34 size 10 unit bit;
+   b: a size 7;
+   c: "foobar" size 8;
 }

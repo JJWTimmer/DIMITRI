@@ -1,0 +1,24 @@
+Case for loading modules
+
+I want to do this:
+- find extensions (represented by a folder with some modules)
+- load the highest version of every module (if ext1/m1.rsc, ext1/m2.rsc, ext2/m1.rsc, ext2/m3.rsc --> load ext1/m2, ext2/m1, ext2/m3)
+
+Current status:
+- find extensions with Resources module, parse foldernames for extension level
+- for every extension, make a list of all found module filenames (*.rsc)
+- make list of highest level modules
+- generate Rascal code to load those modules
+- manually load the generated code
+
+Problems:
+- dynamic loading of modules breaks static type checker
+- no syntax to load modules in other places then top of file
+
+Ideal solution:
+- combination of loading of modules anywhere in code, and module signatures (a la OCaml)
+
+Alternatives:
+- If not possible to load modules in different places then top of file
+  > Create pre-processor that finds files before Plugin.rsc is run
+  > Use module signatures to specify the wanted modules for the pre-processor

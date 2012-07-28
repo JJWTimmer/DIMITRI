@@ -14,7 +14,7 @@ keyword DerricKeywords =
  | "unit" | "sign" | "endian" | "strings" | "type"
  | "big" | "little" | "true" | "false" | "byte" | "bit" | "ascii" | "utf8" | "integer" | "float" | "string";
 
-lexical Id = ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DerricKeywords;
+lexical Id = id: ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DerricKeywords;
 lexical ContentSpecifierId = @category="Todo" Id;
 lexical ExpressionId = @category="Identifier" Id;
 lexical Number = @category="Constant" hex: [0][xX][a-f A-F 0-9]+ !>> [a-f A-F 0-9]
@@ -55,7 +55,7 @@ syntax VariableFormatSpecifierKeyword = size: "size";
 syntax Sequence = @Foldable sequence: "sequence" SequenceSymbol* symbols;
 
 syntax SequenceSymbol = choiceSeq: "(" SequenceSymbol+ symbols ")"
-                      | fixedOrderSeq: "[" SequenceSymbol* symbols "]"
+                      | fixedOrderSeq: "[" SequenceSymbol* order "]"
                       | right notSeq: "!" SequenceSymbol symbol
                       > zeroOrMoreSeq: SequenceSymbol symbol "*"
                       | optionalSeq: SequenceSymbol symbol "?"
@@ -66,8 +66,7 @@ syntax Structures = @Foldable "structures" Structure*;
 syntax Structure = @Foldable struct: Id name "{" Field* fields "}";
 
 syntax Field = field: Id name ":" FieldSpecifier value ";"
-             | fieldNoValue: Id name ";"
-             | rootField: Id name ":" "{" Field* spec "}";
+             | fieldNoValue: Id name ";";
              
 syntax FieldSpecifier = fieldValue: ValueListSpecifier values FormatSpecifier* format
                       | fieldValue: FormatSpecifier+ format

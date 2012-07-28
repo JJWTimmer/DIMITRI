@@ -1,0 +1,12 @@
+format jpeg
+extension jpeg jpg jfif
+
+
+sequence
+  (SOI)
+
+structures
+
+SOI {
+  marker: 0xFF, 0xD8;
+}
