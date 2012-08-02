@@ -31,9 +31,9 @@ private set[Message] checkDuplicateStructureNames(Format f) {
 	diff
 */
 private set[Message] checkUndefinedSequenceNames(Format f) {
-	set[str] structureNames = { name.val | struct(name, _) <- f.structures };
+	set[Id] structureNames = { name | struct(name, _) <- f.structures };
 	set[SequenceSymbol] sequenceNames = { S | /S:struct(_) <- f.sequence.symbols };
-	set[str] undefinedReferencedNames = {name | struct(name) <- sequenceNames} - structureNames;
+	set[Id] undefinedReferencedNames = {name | struct(name) <- sequenceNames} - structureNames;
 	set[SequenceSymbol] unknowns = {symbol | symbol <- sequenceNames, symbol has name, symbol.name in undefinedReferencedNames };
 	return {error("Sequence references undefined structure: <symbol.name>", symbol@location) | symbol <- unknowns};
 }

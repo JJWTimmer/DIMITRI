@@ -13,6 +13,7 @@ import lang::dimitri::levels::l1::Implode;
 import lang::dimitri::levels::l1::ErrorChecking;
 import lang::dimitri::levels::l1::Compiler;
 
+
 public str LANG = "Dimitri L1";
 public list[FormatSpecifier] DEFAULTS =
 	[
@@ -21,7 +22,7 @@ public list[FormatSpecifier] DEFAULTS =
 		formatSpecifier(endian(), big()),
 		formatSpecifier(strings(), ascii()),
 		formatSpecifier(\type(), integer()),
-		variableSpecifier(size(), number("1"))
+		variableSpecifier(size(), number(1))
 	];
 
 public void registerLevel(str ext) {

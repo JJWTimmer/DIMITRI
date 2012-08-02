@@ -1,6 +1,6 @@
 module lang::dimitri::levels::l1::AST
 
-data Format = format(str name, list[str] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures)
+data Format = format(Id name, list[str] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures)
 			| dummy()
 			;
 
@@ -32,7 +32,7 @@ data VariableKeyword = size();
 
 data Sequence  = sequence(list[SequenceSymbol] symbols);
 
-data SequenceSymbol = struct(str name)
+data SequenceSymbol = struct(Id name)
 					| optionalSeq(SequenceSymbol symbol)
 					| zeroOrMoreSeq(SequenceSymbol symbol)
 					| notSeq(SequenceSymbol symbol)
@@ -50,9 +50,12 @@ data FieldSpecifier = fieldValue(list[Scalar] values, list[FormatSpecifier] form
 					| fieldValue(list[FormatSpecifier] format)
 					;
 
-data Scalar = number(str number)
+data Scalar = number(int number)
+			| hex(str hex)
+			| oct(str oct)
+			| bin(str bin)
 			| string(str string)
-			| ref(str name)
+			| ref(Id field)
 			;
 
 data Id = id(str val);

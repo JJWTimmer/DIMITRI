@@ -1,5 +1,7 @@
 module lang::dimitri::levels::l1::Syntax
 
+import String;
+
 lexical CommentChar = ![*] | [*] !>> [/];
 lexical Comment = @category="Comment" "/*" CommentChar* "*/";
 
@@ -17,11 +19,11 @@ keyword DerricKeywords =
 lexical Id = id: ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DerricKeywords;
 lexical ContentSpecifierId = @category="Todo" Id;
 lexical ExpressionId = @category="Identifier" Id;
-lexical Number = @category="Constant" hex: [0][xX][a-f A-F 0-9]+ !>> [a-f A-F 0-9]
-              |  @category="Constant" bin: [0][bB][0-1]+ !>> [0-1]
-              |  @category="Constant" oct: [0][oO][0-7]+ !>> [0-7]
-              |  @category="Constant" dec: [0-9]+ !>> [0-9];
-lexical String = @category="Constant" "\"" ![\"]*  "\"";
+lexical Integer =  [0-9]+ !>> [0-9];
+lexical Octal =  [0][oO][0-7]+ !>> [0-7];
+lexical Hexadecimal =  [0][xX][a-f A-F 0-9]+ !>> [a-f A-F 0-9];
+lexical Binary =  [0][bB][0-1]+ !>> [0-1];
+lexical String =  ![\"]* ;
 
 
 start syntax Format = @Foldable format: "format" Id name "extension" Id+ extensions Defaults defaults Sequence sequence Structures structures;
@@ -41,13 +43,13 @@ syntax FixedFormatSpecifierValue = big: "big"
 								 | little: "little"
                                  | \true: "true"
                                  | \false: "false"
-                                 | \byte: "byte"
+                                 | byte: "byte"
                                  | bit: "bit"
                                  | ascii: "ascii"
                                  | utf8: "utf8"
-                                 | \integer: "integer"
-                                 | \float: "float"
-                                 | \string: "string"
+                                 | integer: "integer"
+                                 | float: "float"
+                                 | string: "string"
                                  ;
                                  
 syntax VariableFormatSpecifierKeyword = size: "size";
@@ -74,8 +76,10 @@ syntax FieldSpecifier = fieldValue: ValueListSpecifier values FormatSpecifier* f
                       
 syntax ValueListSpecifier = { Expression "," }+;
 
-syntax Expression = number: Number number
-                  | string: String string
+syntax Expression = number: Integer number
+                  | @category="Constant" string: "\"" String string "\""
                   | ref: ExpressionId name
+                  | hex: Hexadecimal
+                  | oct: Octal
+                  | bin: Binary
                   ;
-                  
