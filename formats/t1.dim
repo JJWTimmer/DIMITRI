@@ -9,4 +9,8 @@ structures
 
 SOI {
   marker: 0xFF, 0xD8;
+  strng: "foobar", 0b1, "test";
+  s;
+  ref: s;
+  sz: size 2;
 }

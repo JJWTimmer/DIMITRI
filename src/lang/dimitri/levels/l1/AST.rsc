@@ -1,6 +1,7 @@
 module lang::dimitri::levels::l1::AST
 
-data Format = format(Id name, list[str] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures)
+//data Format = format(Id name, list[str] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures)
+data Format = format(Id name, list[Id] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures)
 			| dummy()
 			;
 
@@ -24,7 +25,6 @@ data FormatValue = big()
 				 | ascii()
 				 | utf8()
 				 | integer()
-				 | float()
 				 | string()
 				 ;
 

@@ -1,6 +1,5 @@
 module lang::dimitri::levels::l1::compiler::Desugar
 
-
 import Set;
 import List;
 import String;
@@ -17,6 +16,8 @@ public Format desugar(Format format) {
 
 	return format;
 }
+
+/////////////////////////////////////
 
 private Format removeMultipleExpressions(Format format) {
 	str getFName(int i, str fname) {
@@ -116,7 +117,7 @@ public SequenceSymbol invert(Format format, set[SequenceSymbol] symbols) {
 	return size(include) > 1 ? choiceSeq(toSet(include)) : include[0];
 }
 
-//TODO: rewrite me to pattern based dispatch; not easy because of stackoverflow
+//TODO: rewrite me to pattern based dispatch; not easy because of nonterminating rules
 public Format normalizeSequence(Format format) {
 	return top-down-break visit(format) {
 		case struct(Id name) => choiceSeq({fixedOrderSeq([struct(name)])})

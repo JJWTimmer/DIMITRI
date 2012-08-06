@@ -17,8 +17,8 @@ keyword DerricKeywords =
  | "big" | "little" | "true" | "false" | "byte" | "bit" | "ascii" | "utf8" | "integer" | "float" | "string";
 
 lexical Id = id: ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DerricKeywords;
-lexical ContentSpecifierId = @category="Todo" Id;
-lexical ExpressionId = @category="Identifier" Id;
+syntax ContentSpecifierId = @category="Todo" Id;
+syntax ExpressionId = @category="Identifier" Id;
 lexical Integer =  [0-9]+ !>> [0-9];
 lexical Octal =  [0][oO][0-7]+ !>> [0-7];
 lexical Hexadecimal =  [0][xX][a-f A-F 0-9]+ !>> [a-f A-F 0-9];

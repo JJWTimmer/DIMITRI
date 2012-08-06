@@ -9,11 +9,14 @@ endian big
 strings ascii
 
 sequence
-(strt strt*)
+(strt strt* foo)
 
 structures
 strt {
    a: 34 size 10 unit bit;
    b: a size 7;
    c: "foobar" size 8;
+   d: a, b size 2;
+   e: size 1;
+   f: e;
 }
