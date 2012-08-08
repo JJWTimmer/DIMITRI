@@ -14,7 +14,7 @@ keyword DerricKeywords =
  | "sequence"
  | "structures"
  | "unit" | "sign" | "endian" | "strings" | "type"
- | "big" | "little" | "true" | "false" | "byte" | "bit" | "ascii" | "utf8" | "integer" | "float" | "string";
+ | "big" | "little" | "true" | "false" | "byte" | "bit" | "ascii" | "utf8" | "integer" | "string";
 
 lexical Id = id: ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DerricKeywords;
 syntax ContentSpecifierId = @category="Todo" Id;

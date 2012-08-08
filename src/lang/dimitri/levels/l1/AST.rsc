@@ -25,6 +25,7 @@ data FormatValue = big()
 				 | ascii()
 				 | utf8()
 				 | integer()
+				 | float()
 				 | string()
 				 ;
 
