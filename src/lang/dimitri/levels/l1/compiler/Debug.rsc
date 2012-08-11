@@ -92,6 +92,8 @@ private str writeFormatSpecs(list[FormatSpecifier] specs, str sep) {
 				case size() : {
 					if (number(n) := val) {
 						res += "size <n><sep>";
+					} else if (ref(s) := val) {
+						res += "size <s.val><sep>";
 					}
 				}
 			}

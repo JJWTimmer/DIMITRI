@@ -1,0 +1,25 @@
+format png
+extension png
+
+strings ascii
+sign false
+unit byte
+size 1
+type integer
+endian big
+
+sequence
+  Signature
+  Chunk*
+
+structures
+Signature { /* Signature, header for all PNG files. */
+  marker: 137, 80, 78, 71, 13, 10, 26, 10;
+}
+
+Chunk { /* Base class for all PNG data structures, except Signature. */
+  length: size 4;
+  chunktype: size 4;
+  chunkdata: size length;
+  crc: size 4;
+}

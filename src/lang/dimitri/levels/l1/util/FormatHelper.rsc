@@ -1,50 +1,51 @@
 module lang::dimitri::levels::l1::util::FormatHelper
 
+import IO;
+import util::Maybe;
 import lang::dimitri::levels::l1::AST;
+import lang::dimitri::levels::Level1; //for the defaults
 
 alias LFS = list[FormatSpecifier];
 
-public map[str, value] generateFormatMap(LFS input) {
-	map[str, value] m = ();
-	for (fs <- specs) {
-		fsWritten = true;
-		if (formatSpecifier(key, val) := fs) {
-			switch(key) {
-				case unit()		: m["unit"] = val;
-				case sign()		: m["sign"] = val;
-				case endian()	: m["endian"] = val;
-				case strings()	: m["strings"] = val;
-				case \type()	: m["type"] = val;
-			}
-		} else if (variableSpecifier(key, val) := fs) {
-			switch(key) {
-				case size() : {
-					if (number(n) := val) {
-						m["size"] = n;
-					}
-				}
-			}
-		}
+public map[FormatKeyword, FormatValue] generateFormatMap(LFS input) = (k:v | formatSpecifier(k, v) <- input );
+public map[VariableKeyword, value] generateVariableMap(LFS input) = (k:v | variableSpecifier(k, v) <- input );
+
+public Maybe[Scalar] getSize(LFS input) = getVariableSpec(size(), #Scalar, input);
+
+public FormatValue getUnit(LFS input) = getFormatSpec(unit(), input);
+public FormatValue getSign(LFS input) = getFormatSpec(sign(), input);
+public FormatValue getEndian(LFS input) = getFormatSpec(endian(), input);
+public FormatValue getStrings(LFS input) = getFormatSpec(strings(), input);
+public FormatValue getType(LFS input) = getFormatSpec(\type(), input);
+
+public FormatValue getFormatSpec(FormatKeyword keyw, LFS input) {
+	locals = generateFormatMap(input);
+	
+	if (keyw in locals)
+		return locals[keyw];
+	else {
+		defaults = getDefaultFormat();
+		return defaults[keyw];
 	}
-	return m;
+	
+	throw "FormatKeyword not found in (default) format";
 }
 
-public int getSize(LFS input) {
-	if (/variableSpecifier(size(), number(n)) := input)
-		return n;
-	else
-		return 0;
+public Maybe[&T] getVariableSpec(VariableKeyword keyw, type[&T] returnFormat, LFS input) {
+	locals = generateVariableMap(input);
+
+	if (keyw in locals) {
+		if (/&T v := locals[keyw]) return just(v);
+	} else {
+		defaults = getDefaultVariables();
+
+		if (/&T v := defaults[keyw]) return just(v);
+	}
+	
+	return nothing();
 }
 
-public FormatValue getUnits(LFS input) = getFormatSpec(unit(), byte(), input);
-public FormatValue getSign(LFS input) = getFormatSpec(sign(), \true(), input);
-public FormatValue getEndian(LFS input) = getFormatSpec(endian(), \big(), input);
-public FormatValue getStrings(LFS input) = getFormatSpec(strings(), \ascii(), input);
-public FormatValue getType(LFS input) = getFormatSpec(\type(), integer(), input);
+public map[FormatKeyword, FormatValue] getDefaultFormat() = generateFormatMap(DEFAULTS);
+public map[FormatKeyword, value] getDefaultVariables() = generateVariableMap(DEFAULTS);
 
-public FormatValue getFormatSpec(FormatKeyword keyw, FormatValue deflt, LFS inp) {
-	if (/formatSpecifier(keyw, val) := input)
-		return val;
-	else
-		return deflt;
-}
+public LFS getDefaultLFS() = DEFAULTS;
