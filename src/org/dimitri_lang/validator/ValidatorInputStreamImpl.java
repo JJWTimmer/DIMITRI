@@ -21,13 +21,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Map;
 
 public class ValidatorInputStreamImpl extends ValidatorInputStream {
 
 	private OrderedInputStream _in;
-	private ContentValidator _cv;
 	private boolean _sign;
 	private boolean _includeMarker;
 
@@ -37,9 +34,8 @@ public class ValidatorInputStreamImpl extends ValidatorInputStream {
 	private long _offset = 0;
 	private long _lastRead = 0;
 
-	public ValidatorInputStreamImpl(InputStream in, ContentValidator cv) {
+	public ValidatorInputStreamImpl(InputStream in) {
 		_in = new OrderedInputStream(in);
-		_cv = cv;
 		_sign = false;
 		_includeMarker = false;
 	}
@@ -233,11 +229,6 @@ public class ValidatorInputStreamImpl extends ValidatorInputStream {
 			}
 		}
 		return new Content(true, out.toByteArray());
-	}
-
-	@Override
-	public Content validateContent(long size, String name, Map<String, String> configuration, Map<String, List<Object>> arguments) throws IOException {
-		return _cv.validateContent(this, size, name, configuration, arguments);
 	}
 
 	@Override

@@ -107,7 +107,7 @@ public SequenceSymbol invert(Format format, set[SequenceSymbol] symbols) {
 		append name;
 	}
 
-	include = for ( struct(id(name), _) <- format.structures) {
+	include = for ( struct(name, _) <- format.structures) {
 		if (name notin exclude) {
 			append struct(name);
 		}

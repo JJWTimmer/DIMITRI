@@ -22,6 +22,6 @@ public class ValidatorInputStreamFactory {
 	}
 
 	public static ValidatorInputStream create(String path) {
-		return new ValidatorInputStreamImpl(new InMemoryInputStream(path), new SkipContentValidator());
+		return new ValidatorInputStreamImpl(new InMemoryInputStream(path));
 	}
 }
