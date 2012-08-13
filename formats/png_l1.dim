@@ -13,11 +13,11 @@ sequence
   Chunk*
 
 structures
-Signature { /* Signature, header for all PNG files. */
+Signature {
   marker: 137, 80, 78, 71, 13, 10, 26, 10;
 }
 
-Chunk { /* Base class for all PNG data structures, except Signature. */
+Chunk {
   length: size 4;
   chunktype: size 4;
   chunkdata: size length;

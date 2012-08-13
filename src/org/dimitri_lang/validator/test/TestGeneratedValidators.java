@@ -39,10 +39,6 @@ public class TestGeneratedValidators {
 	public TestGeneratedValidators() {
 		_name = TEST_FILE;
 	}
-	
-	private String getExtension(String path) {
-		return path.substring(path.lastIndexOf(".") + 1).toLowerCase();
-	}
 
 	@Test
 	public void testGeneratedValidator() {

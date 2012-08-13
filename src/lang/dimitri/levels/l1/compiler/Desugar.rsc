@@ -128,6 +128,7 @@ public Format normalizeSequence(Format format) {
 		case fixedOrderSeq(list[SequenceSymbol] symbols) => choiceSeq({fixedOrderSeq(symbols)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s})
 		case zeroOrMoreSeq(fixedOrderSeq(list[SequenceSymbol] symbols)) => zeroOrMoreSeq(choiceSeq({fixedOrderSeq(symbols)}))
 		case optionalSeq(fixedOrderSeq(list[SequenceSymbol] symbols)) => choiceSeq({fixedOrderSeq(symbols), []})
+		case optionalSeq(choiceSeq(set[SequenceSymbol] symbols)) => choiceSeq({ seq([s]) | s <- symbols, !(fixedOrderSeq(list[SequenceSymbol] syms) := s)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s} + {fixedOrderSeq([])})
 	}
 }
 
