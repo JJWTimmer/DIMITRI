@@ -1,16 +1,12 @@
 module Plugin
 
-import IO;
+import lang::dimitri::Level1;
+import lang::dimitri::Level2;
 
-extend lang::dimitri::Current;
-
-public str EXT  = "dim";
-
-public loc TST = |project://dimitri/formats/t1.dim|;
-public loc PNG = |project://dimitri/formats/png_l1.dim|;
+public loc TST = |project://dimitri/formats/test2.dim1|;
+public loc PNG = |project://dimitri/formats/png.dim1|;
 
 public void main() {
-	println("Loaded Dimitri plugin");
-	
-	registerLang(EXT);
+	registerL1();
+	registerL2();
 }

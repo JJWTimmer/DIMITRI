@@ -13,7 +13,6 @@ data Statement = ldeclV(Type \type, str name)
 			   | skipValue(Type \type)
 			   | skipBuffer(str sizeVar)
 			   | validate(str varName, list[VValue] expOptions)
-			   | validateContent(str varName, str lenName, str method, map[str, str] custom, map[str, list[VValue]] references)
 			   ;
 
 data VValue = var(str name)

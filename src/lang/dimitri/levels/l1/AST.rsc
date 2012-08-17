@@ -1,35 +1,10 @@
 module lang::dimitri::levels::l1::AST
 
-//data Format = format(Id name, list[str] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures)
-data Format = format(Id name, list[Id] extensions, list[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures)
-			| dummy()
-			;
+data Format = format(Id name, list[Id] extensions, set[FormatSpecifier] defaults, Sequence sequence, list[Structure] structures);
 
-data FormatSpecifier = formatSpecifier(FormatKeyword key, FormatValue val)
-					 | variableSpecifier(VariableKeyword varKey, Scalar var)
+data FormatSpecifier = formatSpecifier(str key, str val)
+					 | variableSpecifier(str key, Scalar var)
 					 ;
-
-data FormatKeyword = unit()
-				   | sign()
-				   | endian()
-				   | strings()
-				   | \type()
-				   ;
-
-data FormatValue = big()
-				 | little()
-				 | \true()
-				 | \false()
-				 | byte()
-				 | bit()
-				 | ascii()
-				 | utf8()
-				 | integer()
-				 | float()
-				 | string()
-				 ;
-
-data VariableKeyword = size();
 
 data Sequence  = sequence(list[SequenceSymbol] symbols);
 
@@ -44,11 +19,12 @@ data SequenceSymbol = struct(Id name)
 data Structure = struct(Id name, list[Field] fields);
 
 data Field = fieldNoValue(Id name)
-		   | field(Id name, FieldSpecifier \value)
+		   | fieldRaw(Id name, FieldSpecifier \value)
+		   | field(Id name, list[Scalar] values, set[FormatSpecifier] format)
 		   ;
 
-data FieldSpecifier = fieldValue(list[Scalar] values, list[FormatSpecifier] format)
-					| fieldValue(list[FormatSpecifier] format)
+data FieldSpecifier = fieldValue(list[Scalar] values, set[FormatSpecifier] format)
+					| fieldValue(set[FormatSpecifier] format)
 					;
 
 data Scalar = number(int number)
@@ -64,14 +40,11 @@ data Id = id(str val);
 anno loc Id@location;			
 anno loc Format@location;	
 anno loc FormatSpecifier@location;	
-anno loc FormatKeyword@location;	
-anno loc FormatValue@location;	
 anno loc Sequence@location;	
 anno loc SequenceSymbol@location;	
 anno loc Structure@location;	
 anno loc Field@location;	
 anno loc FieldSpecifier@location;	
 anno loc Scalar@location;	
-anno loc VariableKeyword@location;	
 
 anno bool FormatSpecifier@local;

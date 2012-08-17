@@ -3,49 +3,36 @@ module lang::dimitri::levels::l1::util::FormatHelper
 import IO;
 import util::Maybe;
 import lang::dimitri::levels::l1::AST;
-import lang::dimitri::levels::Level1; //for the defaults
+import lang::dimitri::Level1; //for the defaults
 
-alias LFS = list[FormatSpecifier];
+alias SFS = set[FormatSpecifier];
 
-public map[FormatKeyword, FormatValue] generateFormatMap(LFS input) = (k:v | formatSpecifier(k, v) <- input );
-public map[VariableKeyword, value] generateVariableMap(LFS input) = (k:v | variableSpecifier(k, v) <- input );
+public map[str, str] generateFormatMap(SFS input) = (k:v | formatSpecifier(k, v) <- input );
+public map[str, Scalar] generateVariableMap(SFS input) = (k:v | variableSpecifier(k, v) <- input );
 
-public Maybe[Scalar] getSize(LFS input) = getVariableSpec(size(), #Scalar, input);
-
-public FormatValue getUnit(LFS input) = getFormatSpec(unit(), input);
-public FormatValue getSign(LFS input) = getFormatSpec(sign(), input);
-public FormatValue getEndian(LFS input) = getFormatSpec(endian(), input);
-public FormatValue getStrings(LFS input) = getFormatSpec(strings(), input);
-public FormatValue getType(LFS input) = getFormatSpec(\type(), input);
-
-public FormatValue getFormatSpec(FormatKeyword keyw, LFS input) {
-	locals = generateFormatMap(input);
-	
-	if (keyw in locals)
-		return locals[keyw];
-	else {
-		defaults = getDefaultFormat();
-		return defaults[keyw];
+public SFS setSFSValue(SFS format, str name, str val) {
+	return visit (format) {
+		case formatSpecifier(name, _) : insert formatSpecifier(name, val);
 	}
-	
-	throw "FormatKeyword not found in (default) format";
+}
+public SFS setSFSValue(SFS format, str name, Scalar val) {
+	return visit (format) {
+		case variableSpecifier(name, _) : insert variableSpecifier(name, val);
+	};
 }
 
-public Maybe[&T] getVariableSpec(VariableKeyword keyw, type[&T] returnFormat, LFS input) {
-	locals = generateVariableMap(input);
-
-	if (keyw in locals) {
-		if (/&T v := locals[keyw]) return just(v);
-	} else {
-		defaults = getDefaultVariables();
-
-		if (/&T v := defaults[keyw]) return just(v);
-	}
-	
+public Maybe[str] getSFSString(SFS format, str key) {
+	if (/formatSpecifier(key, val) := format) return just(val);
 	return nothing();
 }
 
-public map[FormatKeyword, FormatValue] getDefaultFormat() = generateFormatMap(DEFAULTS);
-public map[FormatKeyword, value] getDefaultVariables() = generateVariableMap(DEFAULTS);
+public Maybe[Scalar] getSFSScalar(SFS format, str key) {
+	if (/variableSpecifier(key, val) := format) return just(val);
+	return nothing();
+}
 
-public LFS getDefaultLFS() = DEFAULTS;
+public SFS getDefaultSFS(SFS defaults) {
+	keys = {fs.key | FormatSpecifier fs <- defaults};
+	for (FormatSpecifier def <- DEFAULTS, def.key notin keys) defaults += def;
+	return defaults;
+}

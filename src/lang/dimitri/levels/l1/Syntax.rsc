@@ -17,8 +17,8 @@ keyword DerricKeywords =
  | "big" | "little" | "true" | "false" | "byte" | "bit" | "ascii" | "utf8" | "integer" | "string";
 
 lexical Id = id: ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DerricKeywords;
-syntax ContentSpecifierId = @category="Todo" Id;
 syntax ExpressionId = @category="Identifier" Id;
+ 
 lexical Integer =  [0-9]+ !>> [0-9];
 lexical Octal =  [0][oO][0-7]+ !>> [0-7];
 lexical Hexadecimal =  [0][xX][a-f A-F 0-9]+ !>> [a-f A-F 0-9];
@@ -30,29 +30,30 @@ start syntax Format = @Foldable format: "format" Id name "extension" Id+ extensi
 
 syntax Defaults = @Foldable FormatSpecifier*;
 
-syntax FormatSpecifier = formatSpecifier: FixedFormatSpecifierKeyword key FixedFormatSpecifierValue val
-					   | variableSpecifier: VariableFormatSpecifierKeyword varKey Expression var;
+syntax FormatSpecifier = formatSpecifier: FormatSpecifierKeyword key FormatSpecifierValue val
+					   | variableSpecifier: VariableSpecifierKeyword key Scalar var
+					   ;
 
-syntax FixedFormatSpecifierKeyword = unit: "unit"
-								   | sign: "sign"
-								   | endian: "endian"
-								   | strings: "strings"
-								   | \type: "type";
-								   
-syntax FixedFormatSpecifierValue = big: "big"
-								 | little: "little"
-                                 | \true: "true"
-                                 | \false: "false"
-                                 | byte: "byte"
-                                 | bit: "bit"
-                                 | ascii: "ascii"
-                                 | utf8: "utf8"
-                                 | integer: "integer"
-                                 | float: "float"
-                                 | string: "string"
-                                 ;
-                                 
-syntax VariableFormatSpecifierKeyword = size: "size";
+lexical FormatSpecifierKeyword = "unit"
+							  | "sign"
+							  | "endian"
+							  | "strings"
+							  | "type"
+							  ;
+
+lexical FormatSpecifierValue = "big"
+							| "little"
+                            | "true"
+                            | "false"
+                            | "byte"
+                            | "bit"
+                            | "ascii"
+                            | "utf8"
+                            | "integer"
+                            | "string"
+                            ;
+
+lexical VariableSpecifierKeyword = "size";
 
 syntax Sequence = @Foldable sequence: "sequence" SequenceSymbol* symbols;
 
@@ -61,25 +62,25 @@ syntax SequenceSymbol = choiceSeq: "(" SequenceSymbol+ symbols ")"
                       | right notSeq: "!" SequenceSymbol symbol
                       > zeroOrMoreSeq: SequenceSymbol symbol "*"
                       | optionalSeq: SequenceSymbol symbol "?"
-                      | struct: Id;
+                      | struct: Id name;
 
 syntax Structures = @Foldable "structures" Structure*;
 
 syntax Structure = @Foldable struct: Id name "{" Field* fields "}";
 
-syntax Field = field: Id name ":" FieldSpecifier value ";"
+syntax Field = fieldRaw: Id name ":" FieldSpecifier value ";"
              | fieldNoValue: Id name ";";
              
 syntax FieldSpecifier = fieldValue: ValueListSpecifier values FormatSpecifier* format
                       | fieldValue: FormatSpecifier+ format
                       ;
                       
-syntax ValueListSpecifier = { Expression "," }+;
+syntax ValueListSpecifier = { Scalar "," }+;
 
-syntax Expression = number: Integer number
-                  | @category="Constant" string: "\"" String string "\""
-                  | ref: ExpressionId name
-                  | hex: Hexadecimal
-                  | oct: Octal
-                  | bin: Binary
-                  ;
+syntax Scalar = number: Integer number
+              | @category="Constant" string: "\"" String string "\""
+              | ref: ExpressionId name
+              | hex: Hexadecimal
+              | oct: Octal
+              | bin: Binary
+              ;

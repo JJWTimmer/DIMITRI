@@ -6,23 +6,24 @@ import Set;
 import String;
 
 import lang::dimitri::levels::l1::AST;
+import lang::dimitri::levels::l1::compiler::SequenceSymbol2String;
 
 map[str,str] mapping = ("*":"_");
 
-public str generateFormat(Format format, list[FormatSpecifier] base) {
+public str debugFormat(Format format, set[FormatSpecifier] base) {
 	str res = "";
 	res += "format <format.name.val>\n";
 	
 	res += "extension";
-	//for (str ext <- format.extensions) {
+
 	for (id(ext) <- format.extensions) {
 		res += " <ext>";
 	}
 	res += "\n\n";
 	
-	set[FormatSpecifier] defined = toSet(format.defaults) - toSet(base);
+	defined = format.defaults - base;
 	bool fsWritten = false;
-	res += writeFormatSpecs(toList(defined), "\n");
+	res += writeFormatSpecs(defined, "\n");
 	if (fsWritten) {
 		res += "\n";
 	}
@@ -45,57 +46,17 @@ public str generateFormat(Format format, list[FormatSpecifier] base) {
 	return res;
 }
 
-private str writeFormatSpecs(list[FormatSpecifier] specs, str sep) {
+private str writeFormatSpecs(set[FormatSpecifier] specs, str sep) {
 	res = "";
 	for (fs <- specs) {
 		fsWritten = true;
 		if (formatSpecifier(key, val) := fs) {
-			switch(key) {
-				case unit() : {
-					if (bit() := val) {
-						res += "unit bit<sep>";
-					} else if (byte() := val) {
-						res += "unit byte<sep>";
-					}
-				}
-				case sign() : {
-					if (\true() := val) {
-						res += "sign true<sep>";
-					} else if (\false() := val) {
-						res += "sign false<sep>";
-					}
-				}
-				case endian() : {
-					if (big() := val) {
-						res += "endian big<sep>";
-					} else if (little() := val) {
-						res += "endian little<sep>";
-					}
-				}
-				case strings() : {
-					if (utf8() := val) {
-						res += "strings utf8<sep>";
-					} else if (ascii() := val) {
-						res += "strings ascii<sep>";
-					}
-				}
-				case \type() : {
-					if (integer() := val) {
-						res += "type integer<sep>";
-					} else if (string() := val) {
-						res += "type string<sep>";
-					}
-				}
-			}
+			res += "<key> <val><sep>";
 		} else if (variableSpecifier(key, val) := fs) {
-			switch(key) {
-				case size() : {
-					if (number(n) := val) {
-						res += "size <n><sep>";
-					} else if (ref(s) := val) {
-						res += "size <s.val><sep>";
-					}
-				}
+			if (number(n) := val) {
+				res += "<key> <n><sep>";
+			} else if (ref(s) := val) {
+				res += "<key> <s.val><sep>";
 			}
 		}
 	}
@@ -103,16 +64,17 @@ private str writeFormatSpecs(list[FormatSpecifier] specs, str sep) {
 }
 
 private str writeField(Field f) {
-	str res = escape(f.name.val, mapping);
-	list[FormatSpecifier] overridden = getLocalQualifiers(f);
-	if (isEmpty(overridden), fieldNoValue(_) := f) {
+	res = escape(f.name.val, mapping);
+	overridden = getLocalFormat(f);
+	
+	if (isEmpty(overridden), field(_, [], _) := f) {
 		res += ";";
 	} else {
 		res += ":";
 		str exp = "";
-		if (field(_, fieldValue(val, _)) := f) {
-			exp = writeExpression(getOneFrom(val));
-		}
+		
+		exp = writeExpression(f.values);
+		
 		if (size(exp) > 0) {
 			res += " " + exp;
 		}
@@ -123,36 +85,10 @@ private str writeField(Field f) {
 	return res;
 }
 
-private list[FormatSpecifier] getLocalQualifiers(fieldNoValue(_)) {
-	return [];
-}
-private default list[FormatSpecifier] getLocalQualifiers(Field f) {	
-	if (f has \value) {
-		return for (FormatSpecifier fs <- f.\value.format) {
-			if ((fs@local)?) append fs;
-		}
-	} else {
-		return [];
-	}
-}
+private set[FormatSpecifier] getLocalFormat(Field f) 
+  = {fs | fs <- f.format, (fs@local)?};
 
-public str writeSymbol(SequenceSymbol s) {
-	switch(s) {
-		case struct(id(name)): return name;
-		case optionalSeq(SequenceSymbol symbol): return "<writeSymbol(symbol)>?";
-		case zeroOrMoreSeq(SequenceSymbol symbol): return "<writeSymbol(symbol)>*";
-		case notSeq(SequenceSymbol symbol): return "!<writeSymbol(symbol)>";
-		case choiceSeq(set[SequenceSymbol] symbols): return "(<("" | it + " " + symbol | sym <- symbols, symbol := writeSymbol(sym))> )";
-		case fixedOrderSeq(list[SequenceSymbol] symbolSequence): return "[<("" | it + " " + symbol | sym <- symbolSequence, symbol := writeSymbol(sym))> ]";
-	}
-}
-
-private str writeExpression(Scalar exp) {
-	switch(exp) {
-		case number(n): return "<n>";
-		case string(s): return "\"<s>\"";
-		case ref(id(name)): return escape(name, mapping);
-		
-	}
-	return "";
-}
+private str writeExpression([]) = "";
+private str writeExpression([number(n)]) = "<n>";
+private str writeExpression([string(s)]) = "\"<s>\"";
+private str writeExpression([ref(id(name))]) = escape(name, mapping);

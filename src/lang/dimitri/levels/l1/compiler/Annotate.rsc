@@ -2,6 +2,7 @@ module lang::dimitri::levels::l1::compiler::Annotate
 
 import IO;
 import Set;
+import List;
 
 import lang::dimitri::levels::l1::AST;
 
@@ -11,8 +12,13 @@ anno Reference Field @ ref;
 anno Reference Field @ size;
 anno Dependency Field @ refdep;
 anno Dependency Field @ sizedep;
+anno bool SequenceSymbol @ allowEOF;
 
 public Format annotate(Format format) {
+	return annotateSymbols(annotateFieldRefs(format));
+}
+
+public Format annotateFieldRefs(Format format) {
 	rel[str, str, Reference] refenv = makeReferenceEnvironment(format, true);
 	rel[str, str, Reference] sizeenv = makeReferenceEnvironment(format, false);
 	rel[str, str, Dependency] refdepenv = makeDependencyEnvironment(format, true);
@@ -23,28 +29,37 @@ public Format annotate(Format format) {
 		case Field f : {
 			str name = f.name.val;
 			set[Reference] annotation = refenv[sname, name];
-			if (size(annotation) == 1) {
-				//println("Adding value reference to <sname>.<name>");
-				f@ref = getOneFrom(annotation);
+			if ({r} := annotation) {
+				f@ref = r;
 			}
 			annotation = sizeenv[sname, name];
-			if(size(annotation) == 1) {
-				//println("Adding size reference to <sname>.<name>");
-				f@size = getOneFrom(annotation);
+			if({r} := annotation) {;
+				f@size = r;
 			}
 			set[Dependency] dependency = refdepenv[sname, name];
-			if (size(dependency) == 1) {
-				//println("Adding local forward value reference to <sname>.<name>");
-				f@refdep = getOneFrom(dependency);
+			if ({d} := dependency) {
+				f@refdep = d;
 			}
 			dependency = refsizeenv[sname, name];
-			if (size(dependency) == 1) {
-				//println("Adding local forward size reference to <sname>.<name>");
-				f@sizedep = getOneFrom(dependency);
+			if ({d} := dependency) {
+				f@sizedep = d;
 			}
 			insert f;
 		}
 	}
+}
+
+public Format annotateSymbols(Format format) {
+	bool allowEOF = true;
+	for (i <- [size(format.sequence.symbols)-1..0]) {
+		if (choiceSeq(set[SequenceSymbol] symbols) := format.sequence.symbols[i]) {
+			if (fixedOrderSeq([]) notin symbols) {
+				allowEOF = false;
+			}
+		}
+		format.sequence.symbols[i]@allowEOF = allowEOF;
+	}
+	return format;
 }
 
 private rel[str, str, Reference] makeReferenceEnvironment(Format format, bool values) {
@@ -55,10 +70,8 @@ private rel[str, str, Reference] makeReferenceEnvironment(Format format, bool va
 	
 	void makeRef(str struct, str name) {
 		if (struct != sname) {
-			//println("<struct>.<name> is referenced globally.");
 			env += <struct, name, global()>;
 		} else if (!isEmpty(order[sname, name])) {
-			//println("<sname>.<name> is referenced locally.");
 			env += <sname, name, local()>;
 		}
 	}
@@ -84,7 +97,6 @@ private rel[str, str, Dependency] makeDependencyEnvironment(Format format, bool 
 	
 	void makeRef(str struct, str name) {
 		if (struct == sname && isEmpty(order[sname, name])) {
-			//println("<sname>.<name> has a local forward reference.");
 			env += <sname, fname, name>;
 		}
 	}
@@ -103,9 +115,6 @@ private rel[str, str, Dependency] makeDependencyEnvironment(Format format, bool 
 
 	}
 	for (<str struct, str field> <- env<0, 1>) {
-		//println("<struct>.<field>");
-		//println("order: <order>");
-		//println("env: <env>");
 		int max = max(order[struct, env[struct, field]]);
 		Dependency dep = dependency([v | t <- order, <struct, str v, max> := t][0]);
 		deps += <struct, field, dep>;

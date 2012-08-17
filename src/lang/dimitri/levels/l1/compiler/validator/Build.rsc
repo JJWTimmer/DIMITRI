@@ -12,7 +12,6 @@ import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::compiler::Annotate;
 import lang::dimitri::levels::l1::compiler::validator::ADT;
 import lang::dimitri::levels::l1::util::FormatHelper;
-//import lang::derric::PropagateDefaultsFileFormat;
 
 data EType = \value() | size();
 
@@ -35,7 +34,7 @@ public Validator build(Format format) {
 			statements += ldeclV(lenType, lenName);
 			//Expression sizeExp = (qualifiers[0].name == "byte") ? times(qualifiers[5].count, \value(8)) : qualifiers[5].count;
 			//statements += calc(lenName, generateExpression(struct, sizeExp));
-			statements += calc(lenName, generateScalar(struct, getSize(f.\value.format).val));
+			statements += calc(lenName, generateScalar(struct, getSFSScalar(f.format, "size").val.nmbr));
 			for (Statement s <- frefs[struct,name,size()]) statements += s;
 			if ((f@ref)?) {
 				str bufName = "<struct>_<name>";
@@ -45,7 +44,7 @@ public Validator build(Format format) {
 				statements += skipBuffer(lenName);
 			}
 		} else {
-			Type t = makeType(f);
+			Type t = makeType(format.defaults, f);
 			if (!(f@ref)? && !hasValueSpecification(f)) {
 				statements += skipValue(t);
 			} else if (!(f@ref)? && !(f@refdep)? && !hasValueSpecification(f)) {
@@ -55,7 +54,7 @@ public Validator build(Format format) {
 				statements += ldeclV(t, valName);
 				statements += readValue(t, valName);
 				if (hasValueSpecification(f)) {
-					Statement validateStatement = validate(valName, [generateExpression(struct, f.\value.values)]);
+					Statement validateStatement = validate(valName, [generateScalar(struct, f.values)]);
 					if ((f@refdep)? && dependency(str depName) := f@refdep) frefs += <struct, depName, \value(), validateStatement>;
 					else statements += validateStatement;		
 				}
@@ -64,31 +63,23 @@ public Validator build(Format format) {
 		}
 	}	
 
-	for (t <- format.structures) {
-		struct = t.name.val;
+	for (s <- format.structures) {
+		struct = s.name.val;
 		statements = [];
-		for (f <- t.fields) {
+		for (f <- s.fields) {
 			buildStatements(f);
 		}
-		structures += structure(t.name.val, statements);
+		structures += structure(s.name.val, statements);
 	}
 
 	return validator(toUpperCase(format.name.val) + "Validator", format.name.val, structures);
 }
 
-private VValue generateExpression(str struct, [Scalar exp]) {
-	top-down visit (exp) {
-		case ref(id(name)): return var("<struct>_<name>");
-		case number(int i): return con(i);
-		default: throw "generateExpression: unknown VValue <exp>";
-	}
-}
-
-private bool hasValueSpecification(fieldNoValue(_)) {
+private bool hasValueSpecification(field(_, [],_)) {
 	return false;
 }
-private bool hasValueSpecification(field(_, fieldValue(_))) {
-	return false;
+private default bool hasValueSpecification(Field _) {
+	return true;
 }
 private default bool hasValueSpecification(Field f) {
 	return true;
@@ -110,22 +101,25 @@ private bool isVariableSize(Field f) {
 	return false;
 }
 
-private Type makeType(Field f) {
-	lfs = (f has \value) ? f.\value.format : getDefaultLFS();
-	int bitLength = getSize(lfs).val.number * ((getUnit(lfs) == byte()) ? 8 : 1);
-	Endianness endian = (little() := getEndian(lfs)) ? littleE() : bigE();
-	bool sign = ( \true() := getSign(lfs) ) ? true : false;
-	FormatValue vtype = getType(lfs);
-	if (integer() := vtype) return integer(sign, endian, bitLength);
-	else if (string() := vtype) return integer(sign, endian, bitLength);
+private Type makeType(SFS defaults, Field f) {
+	sfs = (f.format != {}) ? f.format : getDefaultSFS(defaults);
+	
+	Maybe[Scalar] size = getSFSScalar(sfs, "size");
+	unit = getSFSString(sfs, "unit");
+	int bitLength = size.val.number * ((unit.val == "byte") ? 8 : 1);
+	
+	endn = getSFSString(sfs, "endian");
+	Endianness endian = (endn.val == "little") ? littleE() : bigE();
+	
+	sgn = getSFSString(sfs, "sign");
+	bool sign = ( sgn.val == "true" ) ? true : false;
+	
+	vtype = getSFSString(sfs, "type");
+	if (vtype.val in {"integer", "string"}) return integer(sign, endian, bitLength);
 	
 	throw "Unsupported type";
 }
 
-private VValue generateScalar(str struct, Scalar sc) {
-	top-down visit (sc) {
-		case ref(id(name)): return var("<struct>_<name>");
-		case number(int i): return con(i);
-		default: throw "generateExpression: unknown Scalar <sc>";
-	}
-}
+private VValue generateScalar(str struct, [ref(id(name))]) = var("<struct>_<name>");
+private VValue generateScalar(str struct, [number(int i)]) = con(i);
+private default VValue generateScalar(str struct, [x]) { throw "generateScalar: unknown Scalar type"; }

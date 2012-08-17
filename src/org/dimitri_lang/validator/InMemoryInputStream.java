@@ -44,7 +44,12 @@ public class InMemoryInputStream extends InputStream {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
-
+	
+	@Override
+	public int available() {
+	  return _size - _offset;
+	}
+	
 	@Override
 	public void mark(int readLimit) {
 		_marked = true;

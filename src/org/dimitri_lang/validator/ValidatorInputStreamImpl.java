@@ -49,6 +49,13 @@ public class ValidatorInputStreamImpl extends ValidatorInputStream {
 	public long lastLocation() {
 		return _offset;
 	}
+	
+	@Override
+	public boolean atEOF() throws IOException {
+		if (_bitsLeft > 0) return false;
+		if (_in.available() == 0) return true;
+		return false;
+	}
 
 	@Override
 	public long lastRead() {
