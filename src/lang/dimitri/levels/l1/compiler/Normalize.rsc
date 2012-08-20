@@ -7,7 +7,7 @@ module lang::dimitri::levels::l1::compiler::Normalize
 import Set;
 import List;
 import String;
-import Graph;
+import analysis::graphs::Graph;
 
 import lang::dimitri::levels::l1::util::IdHelper;
 import lang::dimitri::levels::l1::util::FormatHelper;

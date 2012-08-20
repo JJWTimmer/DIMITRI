@@ -1,5 +1,5 @@
-format jasper
-extension jt
+format test12
+extension t12
 
 unit byte
 size 5
@@ -9,14 +9,17 @@ endian big
 strings ascii
 
 sequence
-(strt strt* foo)
+(s1 s2* s3?)
 
 structures
-strt {
-   a: 34 size 10 unit bit;
-   b: a size 7;
-   c: "foobar" size 8;
-   d: a, b size 2;
-   e: size 1;
-   f: e;
+s1 {
+	a: 1;
+	b: a;
+	c: z;
+}
+
+s2 {
+	a: 1;
+	b: s1.a;
+	c: s3.q;
 }

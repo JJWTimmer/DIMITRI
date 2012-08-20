@@ -10,7 +10,7 @@ import Message;
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::Parse;
 import lang::dimitri::levels::l1::Implode;
-import lang::dimitri::levels::l1::ErrorChecking;
+import lang::dimitri::levels::l1::Check;
 import lang::dimitri::levels::l1::Compiler;
 
 public str LANG = "Dimitri L1";
@@ -28,7 +28,7 @@ public set[FormatSpecifier] DEFAULTS =
 
 public void registerL1() {
 	registerLanguage(LANG, EXT, parseL1);
-	registerAnnotator(LANG, check);
+	registerAnnotator(LANG, checkL1);
 	
 	contribution = {
 		popup(
@@ -42,26 +42,18 @@ public void registerL1() {
 	registerContributions(LANG, contribution);
 }
 
-public Tree parseL1(str input, loc org) {
-	return parse(input, org);
-}
+public Tree parseL1(str input, loc org) = parse(input, org);
 
-public Tree parseL1(loc org) {
-	return parse(org);
-}
+public Tree parseL1(loc org) = parse(org);
 
-public node implodeL1(Tree format) {
-	return implode(format);
-}
+public node implodeL1(Tree format) = implode(format);
 
-public Tree checkL1(Tree input) {
-	return check(input);
-}
+public Tree checkL1(Tree input) = input[@messages=check(ast)] when ast := implode(input);
 
 public void compileL1(loc file) {
 	tree = parse(file);
 	tree = check(tree);
-	if (!isEmpty(tree@messages)) {
+	if (tree@messages != {}) {
 		println("There are errors:");
 		for (err <- tree@messages) {
 			println("<err.msg> @ <err.at>");
