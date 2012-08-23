@@ -17,6 +17,8 @@ data Statement = ldeclV(Type \type, str name)
 
 data VValue = var(str name)
 			| con(int intValue)
+			| bits(str var)
+			| bytes(str var)
 			;
 
 data Type = integer(bool sign, Endianness endian, int bits);

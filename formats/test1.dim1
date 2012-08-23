@@ -1,4 +1,4 @@
-format jasper
+format l1t1
 extension jt
 
 unit byte
@@ -9,7 +9,8 @@ endian big
 strings ascii
 
 sequence
-(strt strt*)
+	(strt strt*)
+	foo?
 
 structures
 strt {
@@ -20,5 +21,9 @@ strt {
    e: size 1;
    f: e;
    g: z;
-   
+   g: f;
+}
+
+strt {
+	a;
 }

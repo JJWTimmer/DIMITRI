@@ -8,42 +8,38 @@ import lang::dimitri::levels::l1::AST;
 
 data Reference = local();
 data Dependency = dependency(str name);
-anno Reference Field @ ref;
-anno Reference Field @ size;
-anno Dependency Field @ refdep;
-anno Dependency Field @ sizedep;
+
+anno Reference Field @ ref; //Referenced by a future field
+anno Dependency Field @ refdep; //Referenced by a previous field
+
 anno bool SequenceSymbol @ allowEOF;
+
+alias RefEnv = rel[Id struct, Id field, Reference ref];
+alias DepEnv = rel[Id struct, Id field, Dependency dep];
 
 public Format annotate(Format format) {
 	return annotateSymbols(annotateFieldRefs(format));
 }
 
 public Format annotateFieldRefs(Format format) {
-	rel[str, str, Reference] refenv = makeReferenceEnvironment(format, true);
-	rel[str, str, Reference] sizeenv = makeReferenceEnvironment(format, false);
-	rel[str, str, Dependency] refdepenv = makeDependencyEnvironment(format, true);
-	rel[str, str, Dependency] refsizeenv = makeDependencyEnvironment(format, false);
-	str sname = "";
+	RefEnv refenv = makeReferenceEnvironment(format);
+	DepEnv refdepenv = makeDependencyEnvironment(format);
+
+	Id sname = id("");
 	return top-down visit (format) {
-		case struct(id(name), _): sname = name;
+		case struct(Id name, _): sname = name;
 		case Field f : {
-			str name = f.name.val;
-			set[Reference] annotation = refenv[sname, name];
+			Id fname = f.name;
+			set[Reference] annotation = refenv[sname, fname];
 			if ({r} := annotation) {
 				f@ref = r;
 			}
-			annotation = sizeenv[sname, name];
-			if({r} := annotation) {;
-				f@size = r;
-			}
-			set[Dependency] dependency = refdepenv[sname, name];
+			
+			set[Dependency] dependency = refdepenv[sname, fname];
 			if ({d} := dependency) {
 				f@refdep = d;
 			}
-			dependency = refsizeenv[sname, name];
-			if ({d} := dependency) {
-				f@sizedep = d;
-			}
+
 			insert f;
 		}
 	}
@@ -62,62 +58,79 @@ public Format annotateSymbols(Format format) {
 	return format;
 }
 
-private rel[str, str, Reference] makeReferenceEnvironment(Format format, bool values) {
-	rel[str struct, str field, Reference ref] env = {};
-	rel[str struct, str field, bool seen] order = {};
-	str sname = "";
-	str fname = "";
-	
-	void makeRef(str struct, str name) {
-		if (struct != sname) {
-			env += <struct, name, global()>;
-		} else if (!isEmpty(order[sname, name])) {
-			env += <sname, name, local()>;
-		}
-	}
+/////////////
+
+public RefEnv makeReferenceEnvironment(Format format) {
+	RefEnv env = {};
+	rel[Id struct, Id field, bool seen] order = {};
+	Id sname = id("");
+	Id fname = id("");
 
 	top-down visit (format) {
-		case struct(id(name), _): sname = name;
+		case struct(name, _): sname = name;
 		case Field f : {
-			fname = f.name.val;
+			fname = f.name;
 			order += <sname, fname, true>;
 		}
-		case ref(id(name)): if (values) makeRef(sname, name);
+		case Scalar s : env = makeReferenceEnvironment(s, sname, fname, env, order);
 	}
 	return env;
 }
 
-private rel[str, str, Dependency] makeDependencyEnvironment(Format format, bool values) {
-	rel[str struct, str field, str dep] env = {};
-	rel[str struct, str field, int count] order = {};
-	rel[str struct, str field, Dependency dep] deps = {};
-	str sname = "";
-	str fname = "";
-	int count = 0;
-	
-	void makeRef(str struct, str name) {
-		if (struct == sname && isEmpty(order[sname, name])) {
-			env += <sname, fname, name>;
-		}
+
+public RefEnv makeReferenceEnvironment(ref(sourceField), Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order) =
+	makeReferenceRef(sname, sourceField, env, order);
+public default RefEnv makeReferenceEnvironment(Scalar _, Id _, Id _, RefEnv env, rel[Id struct, Id field, bool seen] _) = env;
+
+//target struct == source struct, check in call
+public RefEnv makeReferenceRef(Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order) {
+	if (!isEmpty(order[sname, fname])) {
+		env += <sname, fname, local()>;
 	}
+	return env;
+}
+
+///////////////////////////////////////////////
+
+public rel[Id, Id, Dependency] makeDependencyEnvironment(Format format) {
+	rel[Id struct, Id field, Id dep] env = {};
+	rel[Id struct, Id field, int count] order = {};
+	DepEnv deps = {};
+	Id sname = id("");
+	Id fname = id("");
+	int count = 0;
 
 	top-down visit (format) {
-		case struct(id(name), _): {
+		case struct(name, _): {
 			sname = name;
 			count = 0;
 		}
 		case Field f : {
-			fname = f.name.val;
+			fname = f.name;
 			order += <sname, fname, count>;
 			count += 1;
 		}
-		case ref(id(name)): if (values) makeRef(sname, name);
+		case Scalar s: env = makeDependencyEnvironment(s, sname, fname, env, order);
 
 	}
-	for (<str struct, str field> <- env<0, 1>) {
-		int max = max(order[struct, env[struct, field]]);
-		Dependency dep = dependency([v | t <- order, <struct, str v, max> := t][0]);
+	
+	for (<struct, field> <- env<0, 1>) {
+		mx = max(order[struct, env[struct, field]]);
+		Dependency dep = dependency([v.val | t <- order, <struct, Id v, mx> := t][0]);
 		deps += <struct, field, dep>;
 	}
 	return deps;
+}
+
+public rel[Id struct, Id field, Id dep] makeDependencyEnvironment(ref(Id source), Id sname, Id fname, DepEnv env, rel[Id struct, Id field, int count] order) =
+	makeDependencyRef(sname, fname, source, env, order);
+	
+public default rel[Id struct, Id field, Id dep] makeDependencyEnvironment(Scalar _, Id _, Id _, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] _) = env;
+
+//target struct == source struct, check in call
+public rel[Id struct, Id field, Id dep] makeDependencyRef(Id sname, Id fname, Id source, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] order) {
+	if (isEmpty(order[sname, source])) {
+		env += <sname, fname, source>;
+	}
+	return env;
 }

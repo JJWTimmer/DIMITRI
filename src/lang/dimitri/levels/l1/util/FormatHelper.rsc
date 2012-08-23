@@ -5,7 +5,7 @@ import util::Maybe;
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::Level1; //for the defaults
 
-alias SFS = set[FormatSpecifier];
+public alias SFS = set[FormatSpecifier];
 
 public map[str, str] generateFormatMap(SFS input) = (k:v | formatSpecifier(k, v) <- input );
 public map[str, Scalar] generateVariableMap(SFS input) = (k:v | variableSpecifier(k, v) <- input );

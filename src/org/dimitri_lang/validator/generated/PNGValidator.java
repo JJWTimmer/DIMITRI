@@ -4,6 +4,8 @@ import static org.dimitri_lang.validator.ByteOrder.*;
 
 public class PNGValidator extends org.dimitri_lang.validator.Validator {
 
+	
+
 	public PNGValidator() { super("png"); }
 
 	@Override
@@ -93,10 +95,13 @@ public class PNGValidator extends org.dimitri_lang.validator.Validator {
 
 	private boolean parseChunk() throws java.io.IOException {
 		markStart();
-		if (!_input.skipBits(8)) return noMatch();
-		if (!_input.skipBits(8)) return noMatch();
-		if (!_input.skipBits(8)) return noMatch();
-		if (!_input.skipBits(8)) return noMatch();
+		long Chunk_length;
+		Chunk_length = _input.unsigned().byteOrder(BIG_ENDIAN).readInteger(32);
+		if (!_input.skipBits(32)) return noMatch();
+		long Chunk_chunkdata_len;
+		Chunk_chunkdata_len = Chunk_length;
+		if (_input.skip(Chunk_chunkdata_len) != Chunk_chunkdata_len) return noMatch();
+		if (!_input.skipBits(32)) return noMatch();
 		addSubSequence("Chunk");
 		return true;
 	}

@@ -11,26 +11,24 @@ import lang::dimitri::levels::l1::AST;
 */
 public Format propagateConstants(Format format) {
 
-	rel[str s, str f, Field v] specMap = {<s, f.name.val, f> | struct(id(s),fs) <- format.structures, Field f <- fs};
+	rel[Id s, Id f, Field v] specMap = {<s, f.name, f> | struct(s,fs) <- format.structures, Field f <- fs};
 	
-	Scalar getVal(str s, str f, Scalar originalValue) {
-		sourceField = specMap[s, f];
-		if ([theField] := sourceField, [val] := theField.values) {
-			return val;
-		}
-		return originalValue;
-	}
-	
-	list[Scalar] getVals(str s, str f, list[Scalar] originalValues) {
-		return visit(originalValues) {
-			case r:ref(id(source)) => getVal(s, source, r)
-		}
-	}
-	
-	str sname = "";
+	Id sname = id("");
 	
 	return outermost visit (format) {
-		case struct(id(name), _) : sname = name;
-		case field(id(fname), values, format) : insert field(id(fname), getVals(sname, fname, values), format);
+		case struct(name, _) : sname = name;
+		case field(fname, values, format) : insert field(fname, getVals(sname, values, specMap), format);
 	}
 }
+
+public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, Field] specMap) {
+	return visit(originalValues) {
+		case Scalar s => getVals(sname, s, specMap)
+	}
+}
+
+public list[Scalar] getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = val when
+	sourceField := specMap[sname, source],
+	[theField] := sourceField,
+	[val] := theField.values;
+public default list[Scalar] getVals(Id _, Scalar original, rel[Id, Id, Field] _) = original;

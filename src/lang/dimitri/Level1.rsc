@@ -15,6 +15,8 @@ import lang::dimitri::levels::l1::Compiler;
 
 public str LANG = "Dimitri L1";
 public str EXT  = "dim1";
+public str PACKAGE = "org.dimitri_lang.validator.generated";
+
 
 public set[FormatSpecifier] DEFAULTS =
 	{
@@ -52,15 +54,16 @@ public Tree checkL1(Tree input) = input[@messages=check(ast)] when ast := implod
 
 public void compileL1(loc file) {
 	tree = parse(file);
-	tree = check(tree);
-	if (tree@messages != {}) {
+	ast = implode(tree);
+	messages = check(ast);
+	if (messages != {}) {
 		println("There are errors:");
-		for (err <- tree@messages) {
+		for (err <- messages) {
 			println("<err.msg> @ <err.at>");
 		}
 		return;
 	}
-	ast = implode(tree);
+
 	
-	compile(ast, DEFAULTS);
+	compile(ast, DEFAULTS, PACKAGE);
 }

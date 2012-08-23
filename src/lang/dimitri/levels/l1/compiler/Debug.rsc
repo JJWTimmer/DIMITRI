@@ -46,7 +46,7 @@ public str debugFormat(Format format, set[FormatSpecifier] base) {
 	return res;
 }
 
-private str writeFormatSpecs(set[FormatSpecifier] specs, str sep) {
+public str writeFormatSpecs(set[FormatSpecifier] specs, str sep) {
 	res = "";
 	for (fs <- specs) {
 		fsWritten = true;
@@ -63,7 +63,7 @@ private str writeFormatSpecs(set[FormatSpecifier] specs, str sep) {
 	return res;
 }
 
-private str writeField(Field f) {
+public str writeField(Field f) {
 	res = escape(f.name.val, mapping);
 	overridden = getLocalFormat(f);
 	
@@ -73,7 +73,7 @@ private str writeField(Field f) {
 		res += ":";
 		str exp = "";
 		
-		exp = writeExpression(f.values);
+		exp = writeScalar(f.values);
 		
 		if (size(exp) > 0) {
 			res += " " + exp;
@@ -85,10 +85,10 @@ private str writeField(Field f) {
 	return res;
 }
 
-private set[FormatSpecifier] getLocalFormat(Field f) 
+public set[FormatSpecifier] getLocalFormat(Field f) 
   = {fs | fs <- f.format, (fs@local)?};
 
-private str writeExpression([]) = "";
-private str writeExpression([number(n)]) = "<n>";
-private str writeExpression([string(s)]) = "\"<s>\"";
-private str writeExpression([ref(id(name))]) = escape(name, mapping);
+public str writeScalar([]) = "";
+public str writeScalar([number(n)]) = "<n>";
+public str writeScalar([string(s)]) = "\"<s>\"";
+public str writeScalar([ref(id(name))]) = escape(name, mapping);

@@ -32,25 +32,17 @@ public str generateIntegerDeclaration(bool sign, int bits, str name) {
 }
 
 private str generateValueSet(list[VValue] le, str vs) {
-	str ret = "org.dimitri_lang.validator.ValueSet <vs> = new org.dimitri_lang.validator.ValueSet();";
+	str ret = "org.dimitri_lang.validator.ValueSet <vs> = new org.dimitri_lang.validator.ValueSet();\n";
 	for (VValue exp <- le) {
-		ret += "<vs>.addEquals(<generateValueExpression(exp)>);";
+		ret += "		<vs>.addEquals(<generateValueExpression(exp)>);";
 	}
 	return ret;
 }
 
-private str generateValueExpression(VValue exp) {
-	top-down visit (exp) {
-		case var(str n): return n;
-		case con(int i): {
-			if (i <= 2147483647) {
-				return "<i>";
-			} else {
-				return "<i>l";
-			}
-		}
-	}
-}
+private str generateValueExpression(bits(str var)) = var;
+private str generateValueExpression(bytes(str var)) = "8 * <var>";
+private str generateValueExpression(var(str n)) = n;
+private str generateValueExpression(con(int i)) = (i <= 2147483647) ? "<i>" : "<i>l";
 
 private str generateReadValueMethodCall(Type \type) {
 	switch (\type) {

@@ -1,11 +1,11 @@
-format jpeg
-extension jpeg jpg jfif
+format l2t2
+extension t22
 
 endian little
 
 sequence
-  S1
-
+	S1
+	S2
 structures
 
 S1 {
@@ -16,4 +16,8 @@ S1 {
   ref: s;
   sz: size 2;
   szref: size sz;
+}
+
+S2 {
+	refsS1: S1.fw;
 }

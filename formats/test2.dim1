@@ -1,4 +1,4 @@
-format jpeg
+format l1t2
 extension jpeg jpg jfif
 
 endian little
