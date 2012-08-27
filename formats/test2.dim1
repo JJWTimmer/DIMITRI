@@ -1,7 +1,12 @@
 format l1t2
-extension jpeg jpg jfif
+extension l1t2
 
-endian little
+strings ascii
+sign false
+unit byte
+size 1
+type integer
+endian big
 
 sequence
   S1
