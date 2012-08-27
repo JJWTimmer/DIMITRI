@@ -1,18 +1,9 @@
-package org.dimitri_lang.validator.test;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
+package org.dimitri_lang.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-import org.dimitri_lang.*;
-import org.dimitri_lang.validator.*;
-import org.dimitri_lang.validator.generated.*;
+import org.dimitri_lang.runtime.level1.*;
+import org.dimitri_lang.generated.*;
 
 public class TestPNG1 {
 

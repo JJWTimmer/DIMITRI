@@ -14,30 +14,27 @@
    limitations under the License.
 */
 
-package org.dimitri_lang.validator;
+package org.dimitri_lang.runtime.level1;
 
-public enum BitOrder {
-	MSB_FIRST {
-		public void apply(byte[] b) {
-		}
+import java.io.IOException;
+import java.util.ArrayList;
 
-		public byte apply(byte b) {
-			return b;
-		}
-	},
-	LSB_FIRST {
-		public void apply(byte[] b) {
-			for (int i = 0; i < b.length; i++) {
-				b[i] = apply(b[i]);
-			}
-		}
+public class SubStream {
+	
+	public final ArrayList<byte[]> fragments = new ArrayList<byte[]>();
 
-		public byte apply(byte b) {
-			// see: http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith64BitsDiv
-			return (byte) (((b & 0xFF) * 0x0202020202L & 0x010884422010L) % 1023);
+	public void addFragment(ValidatorInputStream stream, long size) throws IOException {
+		if (!stream.isByteAligned()) {
+			throw new RuntimeException("Can only read data fragments when the stream is byte aligned.");
 		}
-	};
-
-	public abstract void apply(byte[] b);
-	public abstract byte apply(byte b);
+		// TODO: handle bit sizes
+		byte[] data = new byte[(int)size];
+		stream.read(data);
+		fragments.add(data);
+	}
+	
+	public byte[] getLast() {
+		if (fragments.size() == 0) return null;
+		else return fragments.get(fragments.size() -1);
+	}
 }

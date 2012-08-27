@@ -13,7 +13,7 @@ import lang::dimitri::levels::l2::Compiler;
 
 public str LANG = "Dimitri L2";
 public str EXT  = "dim2";
-public str PACKAGE = "org.dimitri_lang.validator.generated";
+public str PACKAGE = "org.dimitri_lang.generated";
 
 public void registerL2() {
 	registerLanguage(LANG, EXT, parseL2);
@@ -29,9 +29,9 @@ public Format implodeL2(Tree t) = implode(t);
 public Tree checkL2(Tree t) = t[@messages=lang::dimitri::levels::l2::Check::check(ast)] when ast := implode(t);
 
 public void compileL2(loc file) {
-	tree = lang::dimitri::levels::l2::Parse::parse(file);
-	ast = lang::dimitri::levels::l2::Implode::implode(tree);
-	messages = lang::dimitri::levels::l2::Check::check(ast);
+	tree = parse(file);
+	ast = implode(tree);
+	messages = check(ast);
 	if (messages != {}) {
 		println("There are errors:");
 		for (err <- messages) {

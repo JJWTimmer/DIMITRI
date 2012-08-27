@@ -28,8 +28,9 @@ public void compile(Format ast, set[FormatSpecifier] langConsts, str packageName
 	validatorADT = getValidatorL2(ast);
 
 //text(validatorADT);
+	javaPathPrefix = "dimitri/src/<replaceAll(packageName, ".", "/")>/";
 
-	writeFile(|project://dimitri/src/org/dimitri_lang/validator/generated/<toUpperCase(ast.name.val)>Validator.java|,
+	writeFile(|project://<javaPathPrefix>/<toUpperCase(ast.name.val)>Validator.java|,
 		generate(ast.sequence.symbols, ast.extensions[0].val, validatorADT, packageName));
 
 }

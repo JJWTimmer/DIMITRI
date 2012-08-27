@@ -14,22 +14,30 @@
    limitations under the License.
 */
 
-package org.dimitri_lang.validator;
+package org.dimitri_lang.runtime.level1;
 
-public enum ByteOrder {
-	BIG_ENDIAN {
+public enum BitOrder {
+	MSB_FIRST {
 		public void apply(byte[] b) {
 		}
+
+		public byte apply(byte b) {
+			return b;
+		}
 	},
-	LITTLE_ENDIAN {
+	LSB_FIRST {
 		public void apply(byte[] b) {
-			for (int i = 0; i < b.length / 2; i++) {
-				byte tmp = b[i];
-				b[i] = b[(b.length - 1) - i];
-				b[(b.length - 1) - i] = tmp;
+			for (int i = 0; i < b.length; i++) {
+				b[i] = apply(b[i]);
 			}
+		}
+
+		public byte apply(byte b) {
+			// see: http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith64BitsDiv
+			return (byte) (((b & 0xFF) * 0x0202020202L & 0x010884422010L) % 1023);
 		}
 	};
 
 	public abstract void apply(byte[] b);
+	public abstract byte apply(byte b);
 }

@@ -11,10 +11,14 @@ import lang::dimitri::levels::l1::compiler::SequenceSymbol2String;
 public str generate(list[SequenceSymbol] sequence, str extension, Validator vld, str packageName) =
 	getPackageName(packageName) + getImports() + getClassDeclaration(sequence, extension, vld);
 
-public str getPackageName(str packageName) = "package <packageName>;\n\n";
-public str getImports() = "import static org.dimitri_lang.validator.ByteOrder.*;\n\n";
+public str getPackageName(str packageName) ="package <packageName>;\n\n";
+public str getImports() =
+	"import static org.dimitri_lang.runtime.level1.ByteOrder.*;
+	'import org.dimitri_lang.runtime.level1.*;
+	'
+	";
 public str getClassDeclaration(list[SequenceSymbol] sequence, str extension, validator(name, format, structs)) = 
-	"public class <name> extends org.dimitri_lang.validator.Validator {
+	"public class <name> extends Validator {
 	'<getConstructor(name, format)>
 	'<getExtension(extension)>
 	'<getParseBody(sequence)>
@@ -29,7 +33,7 @@ public str getExtension(str extension) = "	@Override
 public str getParseBody(list[SequenceSymbol] symbols) {
 	int label = 0;
 	return "	@Override
-	'	public org.dimitri_lang.validator.ParseResult tryParseBody() throws java.io.IOException {
+	'	public ParseResult tryParseBody() throws java.io.IOException {
 	'		<for (symbol <- symbols) {>_currentSymbol = \"<writeSymbol(symbol)>\";
 	'		<generateSymbol(symbol, label)><label +=1; }>
 	'		return yes();
@@ -38,7 +42,7 @@ public str getParseBody(list[SequenceSymbol] symbols) {
 }
 public str getFindFooter() =
 	"	@Override
-	'	public org.dimitri_lang.validator.ParseResult findNextFooter() throws java.io.IOException {
+	'	public ParseResult findNextFooter() throws java.io.IOException {
 	'		return yes();
 	'	}
 	";

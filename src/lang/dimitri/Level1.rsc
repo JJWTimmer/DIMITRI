@@ -15,7 +15,7 @@ import lang::dimitri::levels::l1::Compiler;
 
 public str LANG = "Dimitri L1";
 public str EXT  = "dim1";
-public str PACKAGE = "org.dimitri_lang.validator.generated";
+public str PACKAGE = "org.dimitri_lang.generated";
 
 
 public set[FormatSpecifier] DEFAULTS =

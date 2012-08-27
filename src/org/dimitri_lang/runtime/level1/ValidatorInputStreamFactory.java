@@ -14,8 +14,14 @@
    limitations under the License.
 */
 
-package org.dimitri_lang.validator;
+package org.dimitri_lang.runtime.level1;
 
-interface ValueComparer {
-	boolean equals(long value);
+public class ValidatorInputStreamFactory {
+
+	private ValidatorInputStreamFactory() {
+	}
+
+	public static ValidatorInputStream create(String path) {
+		return new ValidatorInputStreamImpl(new InMemoryInputStream(path));
+	}
 }

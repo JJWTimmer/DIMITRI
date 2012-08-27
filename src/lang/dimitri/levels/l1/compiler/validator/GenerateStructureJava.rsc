@@ -9,7 +9,7 @@ public str generateStructure(Structure struct) {
 		ret += "		";
 		switch (s) {
 			case ldeclV(integer(bool sign, _, int bits), str n): ret += "<generateIntegerDeclaration(sign, bits, n)>";
-			case ldeclB(str n): ret += "org.dimitri_lang.validator.SubStream <n> = new org.dimitri_lang.validator.SubStream();";
+			case ldeclB(str n): ret += "org.dimitri_lang.runtime.level1.SubStream <n> = new org.dimitri_lang.runtime.level1.SubStream();";
 			case calc(str n, VValue e): ret += "<n> = <generateValueExpression(e)>;";
 			case readValue(Type t, str n): ret += "<n> = <generateReadValueMethodCall(t)>;";
 			case readBuffer(str s, str n): ret += "<n>.addFragment(_input, <s>);";
@@ -28,11 +28,11 @@ public str generateStructure(Structure struct) {
 public str generateIntegerDeclaration(bool sign, int bits, str name) {
 	if (sign) bits += 1;
 	if (bits <= 64) return "long <name>;";
-	else return "org.dimitri_lang.validator.SubStream <name> = new org.dimitri_lang.validator.SubStream();";
+	else return "org.dimitri_lang.runtime.level1.SubStream <name> = new org.dimitri_lang.runtime.level1.SubStream();";
 }
 
 private str generateValueSet(list[VValue] le, str vs) {
-	str ret = "org.dimitri_lang.validator.ValueSet <vs> = new org.dimitri_lang.validator.ValueSet();\n";
+	str ret = "org.dimitri_lang.runtime.level1.ValueSet <vs> = new org.dimitri_lang.runtime.level1.ValueSet();\n";
 	for (VValue exp <- le) {
 		ret += "		<vs>.addEquals(<generateValueExpression(exp)>);";
 	}

@@ -14,14 +14,22 @@
    limitations under the License.
 */
 
-package org.dimitri_lang.validator;
+package org.dimitri_lang.runtime.level1;
 
-public class Content {
-	public final boolean validated;
-	public final byte[] data;
+public enum ByteOrder {
+	BIG_ENDIAN {
+		public void apply(byte[] b) {
+		}
+	},
+	LITTLE_ENDIAN {
+		public void apply(byte[] b) {
+			for (int i = 0; i < b.length / 2; i++) {
+				byte tmp = b[i];
+				b[i] = b[(b.length - 1) - i];
+				b[(b.length - 1) - i] = tmp;
+			}
+		}
+	};
 
-	public Content(boolean validated, byte[] data) {
-		this.validated = validated;
-		this.data = data;
-	}
+	public abstract void apply(byte[] b);
 }

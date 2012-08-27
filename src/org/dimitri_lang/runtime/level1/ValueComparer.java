@@ -14,27 +14,8 @@
    limitations under the License.
 */
 
-package org.dimitri_lang.validator;
+package org.dimitri_lang.runtime.level1;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-public class SubStream {
-	
-	public final ArrayList<byte[]> fragments = new ArrayList<byte[]>();
-
-	public void addFragment(ValidatorInputStream stream, long size) throws IOException {
-		if (!stream.isByteAligned()) {
-			throw new RuntimeException("Can only read data fragments when the stream is byte aligned.");
-		}
-		// TODO: handle bit sizes
-		byte[] data = new byte[(int)size];
-		stream.read(data);
-		fragments.add(data);
-	}
-	
-	public byte[] getLast() {
-		if (fragments.size() == 0) return null;
-		else return fragments.get(fragments.size() -1);
-	}
+interface ValueComparer {
+	boolean equals(long value);
 }

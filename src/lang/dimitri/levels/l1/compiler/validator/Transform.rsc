@@ -138,4 +138,7 @@ public list[Statement] fixedSizefields2statements (Format format, str sname, Fie
 		}
 		for (Statement s <- frefs[sname,fname,\value()]) statements += s;	}	return statements; }
 
+
+
+
 public Validator getValidator(Format format) = validator(toUpperCase(format.name.val) + "Validator", format.name.val, getStructures(format));

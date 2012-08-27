@@ -2,4 +2,4 @@ bin
 eclipse
 std
 formats/debug/*.dim*
-src/org/dimitri_lang/validator/generated/*.java
+src/org/dimitri_lang/generated/*.java

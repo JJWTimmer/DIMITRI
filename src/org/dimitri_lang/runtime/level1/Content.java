@@ -14,14 +14,14 @@
    limitations under the License.
 */
 
-package org.dimitri_lang.validator;
+package org.dimitri_lang.runtime.level1;
 
-public class ValidatorInputStreamFactory {
+public class Content {
+	public final boolean validated;
+	public final byte[] data;
 
-	private ValidatorInputStreamFactory() {
-	}
-
-	public static ValidatorInputStream create(String path) {
-		return new ValidatorInputStreamImpl(new InMemoryInputStream(path));
+	public Content(boolean validated, byte[] data) {
+		this.validated = validated;
+		this.data = data;
 	}
 }

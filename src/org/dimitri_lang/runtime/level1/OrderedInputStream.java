@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-package org.dimitri_lang.validator;
+package org.dimitri_lang.runtime.level1;
 
 import java.io.EOFException;
 import java.io.FilterInputStream;
