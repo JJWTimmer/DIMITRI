@@ -9,7 +9,7 @@ public str generateStructure(Structure struct) {
 		ret += "		";
 		switch (s) {
 			case ldeclV(integer(bool sign, _, int bits), str n): ret += "<generateIntegerDeclaration(sign, bits, n)>";
-			case ldeclB(str n): ret += "org.dimitri_lang.runtime.level1.SubStream <n> = new org.dimitri_lang.runtime.level1.SubStream();";
+			case ldeclB(str n): ret += "SubStream <n> = new SubStream();";
 			case calc(str n, VValue e): ret += "<n> = <generateValueExpression(e)>;";
 			case readValue(Type t, str n): ret += "<n> = <generateReadValueMethodCall(t)>;";
 			case readBuffer(str s, str n): ret += "<n>.addFragment(_input, <s>);";
@@ -28,11 +28,11 @@ public str generateStructure(Structure struct) {
 public str generateIntegerDeclaration(bool sign, int bits, str name) {
 	if (sign) bits += 1;
 	if (bits <= 64) return "long <name>;";
-	else return "org.dimitri_lang.runtime.level1.SubStream <name> = new org.dimitri_lang.runtime.level1.SubStream();";
+	else return "SubStream <name> = new SubStream();";
 }
 
 private str generateValueSet(list[VValue] le, str vs) {
-	str ret = "org.dimitri_lang.runtime.level1.ValueSet <vs> = new org.dimitri_lang.runtime.level1.ValueSet();\n";
+	str ret = "ValueSet <vs> = new ValueSet();\n";
 	for (VValue exp <- le) {
 		ret += "		<vs>.addEquals(<generateValueExpression(exp)>);";
 	}
@@ -44,8 +44,4 @@ private str generateValueExpression(bytes(str var)) = "8 * <var>";
 private str generateValueExpression(var(str n)) = n;
 private str generateValueExpression(con(int i)) = (i <= 2147483647) ? "<i>" : "<i>l";
 
-private str generateReadValueMethodCall(Type \type) {
-	switch (\type) {
-		case integer(bool sign, Endianness endian, int bits): return "_input.<sign ? "signed()" : "unsigned()">.<(littleE() := endian) ? "byteOrder(LITTLE_ENDIAN)" : "byteOrder(BIG_ENDIAN)">.readInteger(<bits>)";
-	}
-}
+private str generateReadValueMethodCall(integer(bool sign, Endianness endian, int bits)) = "_input.<sign ? "signed()" : "unsigned()">.<(littleE() := endian) ? "byteOrder(LITTLE_ENDIAN)" : "byteOrder(BIG_ENDIAN)">.readInteger(<bits>)";

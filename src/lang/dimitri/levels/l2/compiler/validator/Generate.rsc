@@ -13,7 +13,7 @@ import lang::dimitri::levels::l2::compiler::validator::GenerateGlobal;
 import lang::dimitri::levels::l2::compiler::validator::ADT;
 
 public str getClassDeclaration(list[SequenceSymbol] sequence, str extension, validator(name, format, globals, structs)) = 
-	"public class <name> extends org.dimitri_lang.validator.Validator {
+	"public class <name> extends Validator {
 	'<getGlobals(globals)>
 	'<getConstructor(name, format)>
 	'<getExtension(extension)>

@@ -10,7 +10,6 @@ import String;
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::compiler::Annotate;
 import lang::dimitri::levels::l1::compiler::validator::ADT;
-import lang::dimitri::levels::l1::util::FormatHelper;
 
 data EType = \value() | size();
 
@@ -27,7 +26,7 @@ public list[Structure] getStructures(Format format) {
 		sname = struct.name.val;
 		list[Statement] statements = [];
 		for (field <- struct.fields) {
-			statements += field2statements(format, sname, field, frefs);
+			statements += field2statements(sname, field, frefs);
 		}
 		structures += structure(sname, statements);
 	}
@@ -36,7 +35,6 @@ public list[Structure] getStructures(Format format) {
 
 public FRefs getFRefs(Format format) {
 	str sname = "";
-	str fname = "";
 	FRefs frefs = {};
 	
 	top-down visit (format) {
@@ -72,21 +70,25 @@ public bool isVariableSize(Field f) {
 	return !(/variableSpecifier("size", number(_)) := f.format);
 }
 
-public Type makeType(SFS defaults, Field f) {
-	sfs = (f.format != {}) ? f.format : getDefaultSFS(defaults);
+public Type makeType(Field f) {
 	
-	Maybe[Scalar] size = getSFSScalar(sfs, "size");
-	unit = getSFSString(sfs, "unit");
-	int bitLength = size.val.number * ((unit.val == "byte") ? 8 : 1);
+	Scalar size;
+	if (/variableSpecifier("size", val) := f.format) size = val;
+	str unit;
+	if (/formatSpecifier("unit", val) := f.format) unit = val;
+	int bitLength = size.number * ((unit == "byte") ? 8 : 1);
 	
-	endn = getSFSString(sfs, "endian");
-	Endianness endian = (endn.val == "little") ? littleE() : bigE();
+	str endn;
+	if (/formatSpecifier("endian", val) := f.format) endn = val;
+	Endianness endian = (endn == "little") ? littleE() : bigE();
 	
-	sgn = getSFSString(sfs, "sign");
-	bool sign = ( sgn.val == "true" ) ? true : false;
+	str sgn;
+	if (/formatSpecifier("sign", val) := f.format) sgn = val;
+	bool sign = ( sgn == "true" ) ? true : false;
 	
-	vtype = getSFSString(sfs, "type");
-	if (vtype.val in {"integer", "string"}) return integer(sign, endian, bitLength);
+	str vtype;
+	if (/formatSpecifier("type", val) := f.format) vtype = val;
+	if (vtype in {"integer", "string"}) return integer(sign, endian, bitLength);
 	
 	throw "Unsupported type";
 }
@@ -95,18 +97,21 @@ public VValue generateScalar(str struct, ref(id(name))) = var("<struct>_<name>")
 public VValue generateScalar(str struct, number(int i)) = con(i);
 public default VValue generateScalar(str struct, x) { throw "generateScalar: unknown Scalar type: <x>"; }
 
-public list[Statement] field2statements (Format format, str sname, Field field, FRefs frefs) = variableSizeFields2statements(format, sname, field, frefs) when isVariableSize(field);
-public list[Statement] field2statements (Format format, str sname, Field field, FRefs frefs) = fixedSizefields2statements(format, sname, field, frefs) when !isVariableSize(field);
+public list[Statement] field2statements (str sname, Field field, FRefs frefs) = variableSizeFields2statements(sname, field, frefs) when isVariableSize(field);
+public list[Statement] field2statements (str sname, Field field, FRefs frefs) = fixedSizefields2statements(sname, field, frefs) when !isVariableSize(field);
 
-public list[Statement] variableSizeFields2statements (Format format, str sname, Field field, FRefs frefs) {
+public list[Statement] variableSizeFields2statements (str sname, Field field, FRefs frefs) {
 	list[Statement] statements = [];
 	fname = escape(field.name.val, mapping);
 
 	str lenName = "<sname>_<fname>_len";
 	Type lenType = integer(true, littleE(), 31);
 	statements += ldeclV(lenType, lenName);
-	sourceSizeField = getSFSScalar(field.format, "size").val;
-	relativeSize = getSFSString(field.format, "type").val == "byte" ? bytes(generateScalar(sname, sourceSizeField).name) : bits(generateScalar(sname, sourceSizeField).name);
+	Scalar sourceSizeField;
+	if (/variableSpecifier("size", val) := field.format) sourceSizeField = val;
+	str relType;
+	if (/formatSpecifier("type", val) := field.format) relType = val;
+	relativeSize = (relType == "byte") ? bytes(generateScalar(sname, sourceSizeField).name) : bits(generateScalar(sname, sourceSizeField).name);
 	statements += calc(lenName, relativeSize);
 	
 	for (Statement s <- frefs[sname,fname,size()]) statements += s;
@@ -121,10 +126,10 @@ public list[Statement] variableSizeFields2statements (Format format, str sname, 
 	return statements;
 }
 
-public list[Statement] fixedSizefields2statements (Format format, str sname, Field field, FRefs frefs) {
+public list[Statement] fixedSizefields2statements (str sname, Field field, FRefs frefs) {
 	list[Statement] statements = [];
 	fname = escape(field.name.val, mapping);
-	Type t = makeType(format.defaults, field);
+	Type t = makeType(field);
 	if (!(field@ref)? && !hasValueSpecification(field)) {
 		statements += skipValue(t);
 	} else if (!(field@ref)?, !(field@refdep)?, !hasValueSpecification(field)) {
@@ -136,7 +141,11 @@ public list[Statement] fixedSizefields2statements (Format format, str sname, Fie
 		if (hasValueSpecification(field), ( !(field@refdep)? || ((field@refdep)? && dependency(str _) !:= field@refdep) ) ) {
 			statements += validate(valName, [generateScalar(sname, field.values[0])]);
 		}
-		for (Statement s <- frefs[sname,fname,\value()]) statements += s;	}	return statements; }
+		statements += toList(frefs[sname,fname,\value()]);
+	}
+	
+	return statements;
+}
 
 
 

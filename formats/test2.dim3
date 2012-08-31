@@ -1,0 +1,10 @@
+format l3t2
+extension l3t2
+
+sequence
+	S2
+structures
+
+S2 {
+	javacall: uppercase(param=1) size 4;
+}

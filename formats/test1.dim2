@@ -1,25 +1,26 @@
 format l2t1
 extension t12
 
-unit byte
-size 5
-sign false
 type integer
 endian big
+sign false
+size 5
 strings ascii
+unit byte
 
 sequence
-(s1 s2* s3?)
+  ( s2*  s3?  s1 )
 
 structures
+
 s1 {
-	a: 1;
-	b: a;
-	c: z;
+  a: 1;
+  b: a;
+  c: z;
 }
 
 s2 {
-	a: 1;
-	b: s1.a;
-	c: s3.q;
+  a: 1;
+  b: s1.a;
+  c: s3.q;
 }

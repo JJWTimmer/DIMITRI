@@ -3,3 +3,4 @@ eclipse
 std
 formats/debug/*.dim*
 src/org/dimitri_lang/generated/*.java
+*.bak

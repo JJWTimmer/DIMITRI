@@ -17,43 +17,32 @@ anno bool SequenceSymbol @ allowEOF;
 alias RefEnv = rel[Id struct, Id field, Reference ref];
 alias DepEnv = rel[Id struct, Id field, Dependency dep];
 
-public Format annotate(Format format) {
-	return annotateSymbols(annotateFieldRefs(format));
-}
+public Format annotate(Format format) = annotateAllowEOF(annotateFieldRefs(format));
 
-public Format annotateFieldRefs(Format format) {
-	RefEnv refenv = makeReferenceEnvironment(format);
-	DepEnv refdepenv = makeDependencyEnvironment(format);
-
-	Id sname = id("");
-	return top-down visit (format) {
-		case struct(Id name, _): sname = name;
-		case Field f : {
-			Id fname = f.name;
-			set[Reference] annotation = refenv[sname, fname];
-			if ({r} := annotation) {
-				f@ref = r;
-			}
-			
-			set[Dependency] dependency = refdepenv[sname, fname];
-			if ({d} := dependency) {
-				f@refdep = d;
-			}
-
-			insert f;
-		}
+public Format annotateFieldRefs(Format format) =
+	visit (format) {
+		case struct(sname, fields) => annotateFieldRefs(sname, fields, refenv, refdepenv)
 	}
-}
+	when refenv := makeReferenceEnvironment(format),
+	refdepenv := makeDependencyEnvironment(format);
 
-public Format annotateSymbols(Format format) {
+public Structure annotateFieldRefs(Id sname, list[Field] fields, RefEnv refenv, DepEnv refdepenv) =
+	struct(sname, annoFields) when
+	annoFields := [getDepAnnotation(sname, getRefAnnotation(sname, f, refenv), refdepenv) | Field f <- fields];
+	
+public Field getRefAnnotation(Id sname, Field fld, RefEnv env) = fld[@ref=r] when annotation := env[sname, fld.name], {r} := annotation;
+public default Field getRefAnnotation(Id sname, Field fld, RefEnv env) = fld;
+
+public Field getDepAnnotation(Id sname, Field fld, DepEnv env) = fld[@refdep=r] when annotation := env[sname, fld.name], {r} := annotation;
+public default Field getDepAnnotation(Id sname, Field fld, DepEnv env) = fld;
+
+public Format annotateAllowEOF(Format format) {
 	bool allowEOF = true;
-	for (i <- [size(format.sequence.symbols)-1..0]) {
-		if (choiceSeq(set[SequenceSymbol] symbols) := format.sequence.symbols[i]) {
-			if (fixedOrderSeq([]) notin symbols) {
-				allowEOF = false;
-			}
+	format.sequence.symbols = for (symbol <- format.sequence.symbols) {
+		if (choiceSeq(set[SequenceSymbol] symbols) := symbol, fixedOrderSeq([]) notin symbols) {
+			allowEOF = false;
 		}
-		format.sequence.symbols[i]@allowEOF = allowEOF;
+		append symbol[@allowEOF = allowEOF];
 	}
 	return format;
 }
@@ -78,17 +67,17 @@ public RefEnv makeReferenceEnvironment(Format format) {
 }
 
 
-public RefEnv makeReferenceEnvironment(ref(sourceField), Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order) =
-	makeReferenceRef(sname, sourceField, env, order);
-public default RefEnv makeReferenceEnvironment(Scalar _, Id _, Id _, RefEnv env, rel[Id struct, Id field, bool seen] _) = env;
+public RefEnv makeReferenceEnvironment(ref(sourceField), Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order)
+	= makeReferenceRef(sname, sourceField, env, order);
+public default RefEnv makeReferenceEnvironment(Scalar _, Id _, Id _, RefEnv env, rel[Id struct, Id field, bool seen] _)
+	= env;
 
 //target struct == source struct, check in call
-public RefEnv makeReferenceRef(Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order) {
-	if (!isEmpty(order[sname, fname])) {
-		env += <sname, fname, local()>;
-	}
-	return env;
-}
+public RefEnv makeReferenceRef(Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order)
+	= env + res
+	when !isEmpty(order[sname, fname]),
+	res := {<sname, fname, local()>};
+public default RefEnv makeReferenceRef(Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order) = env;
 
 ///////////////////////////////////////////////
 
@@ -110,7 +99,7 @@ public rel[Id, Id, Dependency] makeDependencyEnvironment(Format format) {
 			order += <sname, fname, count>;
 			count += 1;
 		}
-		case Scalar s: env = makeDependencyEnvironment(s, sname, fname, env, order);
+		case Scalar scal: env = makeDependencyEnvironment(scal, sname, fname, env, order);
 
 	}
 	
@@ -128,9 +117,8 @@ public rel[Id struct, Id field, Id dep] makeDependencyEnvironment(ref(Id source)
 public default rel[Id struct, Id field, Id dep] makeDependencyEnvironment(Scalar _, Id _, Id _, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] _) = env;
 
 //target struct == source struct, check in call
-public rel[Id struct, Id field, Id dep] makeDependencyRef(Id sname, Id fname, Id source, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] order) {
-	if (isEmpty(order[sname, source])) {
-		env += <sname, fname, source>;
-	}
-	return env;
-}
+public rel[Id struct, Id field, Id dep] makeDependencyRef(Id sname, Id fname, Id source, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] order)
+	= env + res
+	when isEmpty(order[sname, source]),
+	res := {<sname, fname, source>};
+public default rel[Id struct, Id field, Id dep] makeDependencyRef(Id sname, Id fname, Id source, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] order) = env;

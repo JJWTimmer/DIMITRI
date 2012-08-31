@@ -1,0 +1,25 @@
+format l2t1
+extension t12
+
+unit byte
+size 5
+sign false
+type integer
+endian big
+strings ascii
+
+sequence
+(s1 s2* s3?)
+
+structures
+s1 {
+	a: 1;
+	b: a;
+	c: z;
+}
+
+s2 {
+	a: 1;
+	b: s1.a;
+	c: s3.q;
+}

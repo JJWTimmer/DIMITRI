@@ -6,11 +6,12 @@ import Set;
 import String;
 
 import lang::dimitri::levels::l1::AST;
+import lang::dimitri::levels::l1::Defaults;
 import lang::dimitri::levels::l1::compiler::SequenceSymbol2String;
 
 map[str,str] mapping = ("*":"_");
 
-public str debugFormat(Format format, set[FormatSpecifier] base) {
+public str debugFormat(Format format) {
 	str res = "";
 	res += "format <format.name.val>\n";
 	
@@ -21,7 +22,7 @@ public str debugFormat(Format format, set[FormatSpecifier] base) {
 	}
 	res += "\n\n";
 	
-	defined = format.defaults - base;
+	defined = format.defaults - getDefaults();
 	bool fsWritten = false;
 	res += writeFormatSpecs(defined, "\n");
 	if (fsWritten) {
@@ -53,11 +54,7 @@ public str writeFormatSpecs(set[FormatSpecifier] specs, str sep) {
 		if (formatSpecifier(key, val) := fs) {
 			res += "<key> <val><sep>";
 		} else if (variableSpecifier(key, val) := fs) {
-			if (number(n) := val) {
-				res += "<key> <n><sep>";
-			} else if (ref(s) := val) {
-				res += "<key> <s.val><sep>";
-			}
+			res += "<key> <writeScalar([val])><sep>";
 		}
 	}
 	return res;
@@ -92,3 +89,4 @@ public str writeScalar([]) = "";
 public str writeScalar([number(n)]) = "<n>";
 public str writeScalar([string(s)]) = "\"<s>\"";
 public str writeScalar([ref(id(name))]) = escape(name, mapping);
+public default str writeScalar([s]) { throw "Unknown scalar: <s>";}

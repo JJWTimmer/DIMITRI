@@ -10,18 +10,15 @@ import String;
 import analysis::graphs::Graph;
 
 import lang::dimitri::levels::l1::util::IdHelper;
-import lang::dimitri::levels::l1::util::FormatHelper;
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::compiler::Strings;
 
-public Format normalize(Format format) {
-	format = removeMultipleExpressions(format);
-	format = removeStrings(format);
-	format = removeNotSequence(format);
-	format = normalizeSequence(format);
+public Format normalize(Format format) = format4 when
+	format1 := removeMultipleExpressions(format),
+	format2 := removeStrings(format1),
+	format3 := removeNotSequence(format2),
+	format4 := sequence2dnf(format3);
 
-	return format;
-}
 
 /////////////////////////////////////
 
@@ -51,11 +48,8 @@ private Format removeMultipleExpressions(Format format) {
 }
 
 private Format removeStrings(Format format) {
-	// struct, field, num strings in field after expansion
+	// [struct], [field], [num strings in field after expansion]
 	rel[str sname, str name, int count] expandedStrings = {};
-	
-	//what struct are we in?
-	str sname;
 	
 	/*
 		in: struct name, list of fields of that struct
@@ -74,17 +68,18 @@ private Format removeStrings(Format format) {
 	
 		return ret: for (f <- fields) {
 			if (f.values != [], string(sval) :=  f.values[0]) {
-				f.format = setSFSValue(f.format, "unit", "byte");
-				f.format = setSFSValue(f.format, "sign", "false");
-				f.format = setSFSValue(f.format, "type", "integer");
-				f.format = setSFSValue(f.format, "size", number(1));
+				localformat = visit (f.format) {
+					case formatSpecifier("unit", _) => formatSpecifier("unit", "byte")
+					case formatSpecifier("sign", _) => formatSpecifier("sign", "false")
+					case formatSpecifier("type", _) => formatSpecifier("type", "integer")
+					case variableSpecifier("size", _) => variableSpecifier("size", number(1))
+				};
 				
 				fname = f.name.val;
 				
 				int i = 0;
-
 				for (c <- chars(sval)) {
-					append ret: field(id(getFName(i, fname)), [number(c)], f.format);
+					append ret: field(id(getFName(i, fname)), [number(c)], localformat);
 					i += 1;
 				}
 			}
@@ -125,19 +120,19 @@ public SequenceSymbol invert(Format format, set[SequenceSymbol] symbols) {
 	return size(include) > 1 ? choiceSeq(toSet(include)) : include[0];
 }
 
-public Format normalizeSequence(Format format) {
+public Format sequence2dnf(Format format) {
 	return top-down-break visit(format) {
-		case SequenceSymbol s : insert normalizeSeq(s);
+		case SequenceSymbol s : insert dnf(s);
 	}
 }
 
-public SequenceSymbol normalizeSeq( SequenceSymbol::struct(Id name) )= choiceSeq({fixedOrderSeq([struct(name)])});
-public SequenceSymbol normalizeSeq( optionalSeq(SequenceSymbol::struct(Id name)) )=  choiceSeq({fixedOrderSeq([struct(name)]), fixedOrderSeq([])});
-public SequenceSymbol normalizeSeq( zeroOrMoreSeq(SequenceSymbol::struct(Id name)) ) = zeroOrMoreSeq(choiceSeq({fixedOrderSeq([struct(name)])}));
-public SequenceSymbol normalizeSeq( choiceSeq(set[SequenceSymbol] symbols) ) = choiceSeq({ fixedOrderSeq([s]) | s <- symbols, !(fixedOrderSeq(list[SequenceSymbol] syms) := s)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s});
-public SequenceSymbol normalizeSeq( zeroOrMoreSeq(choiceSeq(set[SequenceSymbol] symbols)) ) = zeroOrMoreSeq(choiceSeq({ fixedOrderSeq([s]) | s <- symbols, !(fixedOrderSeq(list[SequenceSymbol] syms) := s)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s}));
-public SequenceSymbol normalizeSeq( fixedOrderSeq(list[SequenceSymbol] symbols) ) = choiceSeq({fixedOrderSeq(symbols)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s});
-public SequenceSymbol normalizeSeq( zeroOrMoreSeq(fixedOrderSeq(list[SequenceSymbol] symbols)) ) = zeroOrMoreSeq(choiceSeq({fixedOrderSeq(symbols)}));
-public SequenceSymbol normalizeSeq( optionalSeq(fixedOrderSeq(list[SequenceSymbol] symbols)) ) = choiceSeq({fixedOrderSeq(symbols), fixedOrderSeq([])});
-public SequenceSymbol normalizeSeq( optionalSeq(choiceSeq(set[SequenceSymbol] symbols)) ) = choiceSeq({ seq([s]) | s <- symbols, !(fixedOrderSeq(list[SequenceSymbol] syms) := s)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s} + {fixedOrderSeq([])});
-public default SequenceSymbol normalizeSeq(SequenceSymbol s ) = s;
+public SequenceSymbol dnf( SequenceSymbol::struct(Id name) )= choiceSeq({fixedOrderSeq([struct(name)])});
+public SequenceSymbol dnf( optionalSeq(SequenceSymbol::struct(Id name)) )=  choiceSeq({fixedOrderSeq([struct(name)]), fixedOrderSeq([])});
+public SequenceSymbol dnf( zeroOrMoreSeq(SequenceSymbol::struct(Id name)) ) = zeroOrMoreSeq(choiceSeq({fixedOrderSeq([struct(name)])}));
+public SequenceSymbol dnf( choiceSeq(set[SequenceSymbol] symbols) ) = choiceSeq({ fixedOrderSeq([s]) | s <- symbols, !(fixedOrderSeq(list[SequenceSymbol] syms) := s)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s});
+public SequenceSymbol dnf( zeroOrMoreSeq(choiceSeq(set[SequenceSymbol] symbols)) ) = zeroOrMoreSeq(choiceSeq({ fixedOrderSeq([s]) | s <- symbols, !(fixedOrderSeq(list[SequenceSymbol] syms) := s)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s}));
+public SequenceSymbol dnf( fixedOrderSeq(list[SequenceSymbol] symbols) ) = choiceSeq({fixedOrderSeq(symbols)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s});
+public SequenceSymbol dnf( zeroOrMoreSeq(fixedOrderSeq(list[SequenceSymbol] symbols)) ) = zeroOrMoreSeq(choiceSeq({fixedOrderSeq(symbols)}));
+public SequenceSymbol dnf( optionalSeq(fixedOrderSeq(list[SequenceSymbol] symbols)) ) = choiceSeq({fixedOrderSeq(symbols), fixedOrderSeq([])});
+public SequenceSymbol dnf( optionalSeq(choiceSeq(set[SequenceSymbol] symbols)) ) = choiceSeq({ seq([s]) | s <- symbols, !(fixedOrderSeq(list[SequenceSymbol] syms) := s)} + { s | s <- symbols, fixedOrderSeq(list[SequenceSymbol] syms) := s} + {fixedOrderSeq([])});
+public default SequenceSymbol dnf(SequenceSymbol s ) = s;

@@ -15,15 +15,15 @@ import lang::dimitri::levels::l2::compiler::validator::Transform;
 import lang::dimitri::levels::l2::compiler::validator::ADT;
 import lang::dimitri::levels::l2::compiler::validator::Generate;
 
-public void compile(Format ast, set[FormatSpecifier] langConsts, str packageName) {
-	ast = propagateDefaults(ast, langConsts);
+public void compile(Format ast, str packageName) {
+	ast = propagateDefaults(ast);
 	ast = normalize(ast);
 	ast = propagateConstants(ast);
 	ast = annotate(ast);
 	
 //text(ast);
 
-	writeFile(|project://dimitri/formats/debug/<ast.name.val>.dim2|, debugFormat(ast, langConsts));
+	writeFile(|project://dimitri/formats/debug/<ast.name.val>.dim2|, debugFormat(ast));
 
 	validatorADT = getValidatorL2(ast);
 

@@ -12,15 +12,17 @@ import lang::dimitri::levels::l1::compiler::Debug;
 import lang::dimitri::levels::l1::compiler::validator::Transform;
 import lang::dimitri::levels::l1::compiler::validator::Generate;
 
-public void compile(Format ast, set[FormatSpecifier] langConsts, str packageName) {
-	ast = propagateDefaults(ast, langConsts);
+public void compile(Format ast, str packageName) {
+	ast = propagateDefaults(ast);
 	ast = normalize(ast);
 	ast = propagateConstants(ast);
 	ast = annotate(ast);
 
 //text(ast);
 
-	writeFile(|project://dimitri/formats/debug/<ast.name.val>.dim1|, debugFormat(ast, langConsts));	validator = getValidator(ast);
+	writeFile(|project://dimitri/formats/debug/<ast.name.val>.dim1|, debugFormat(ast));
+	
+	validator = getValidator(ast);
 	
 //text(validator);
 	javaPathPrefix = "dimitri/src/<replaceAll(packageName, ".", "/")>/";

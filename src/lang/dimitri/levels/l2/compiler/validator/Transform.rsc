@@ -29,7 +29,7 @@ public list[Global] getGlobals(Format format) {
 					globals += gdeclB(bufName);
 				} else {
 					str valName = "<sname>_<fname>";
-					Type t = makeType(format.defaults, fld);
+					Type t = makeType(fld);
 					globals += gdeclV(t, valName);
 				}
 			}

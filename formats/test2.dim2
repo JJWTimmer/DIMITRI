@@ -1,11 +1,22 @@
 format l2t2
-extension t22
+extension l2t2
 
-endian little
+/*
+	Testfile contains:
+	S1 S2 S1 S2
+	values:
+	0xFF, 0xD8, "foobar", 1, "test", 6, 6, 6, 0, 1, "z", 0x94, 0xCA
+	6, 9, 0x94, 0xCA
+	0xFF, 0xD8, "foobar", 1, "test", 7, 7, 7, 0, 1, "z", 0x94, 0xCA
+	7, 9, 0x60, 0x84
+*/
+
+size 1
 
 sequence
-	S1
-	S2
+  [S1 S2]*
+  S3*
+
 structures
 
 S1 {
@@ -16,8 +27,15 @@ S1 {
   ref: s;
   sz: size 2;
   szref: size sz;
+  fwcs: S2.y;
 }
 
 S2 {
 	refsS1: S1.fw;
+	x: 9;
+	y: size 2;
+}
+
+S3 {
+	fld: size S2.y;
 }

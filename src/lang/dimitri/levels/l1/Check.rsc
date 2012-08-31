@@ -6,18 +6,18 @@ import Message;
 
 import lang::dimitri::levels::l1::AST;
 
-public set[Message] check(Format f) = check(f, getFields(f), getRefs(f));
+data Context = ctx(rel[Id, Id] fields);
+
+public set[Message] check(Format f) = check(f, ctx(getFields(f)));
 
 public rel[Id, Id] getFields(format(_, _, _, _, structures)) = {*getFields(s) | s <- structures};
 public rel[Id, Id] getFields(Structure::struct(sname, fields)) = {<sname, fname> | field(fname, _, _) <- fields};
 
-public rel[Id, Id] getRefs(format(_, _, _, _, structures)) = {*getRefs(struct) | struct <- structures};
-public rel[Id, Id] getRefs(Structure::struct(sname, fields)) = {*getRefs(field, sname) | field <- fields};
-public rel[Id, Id] getRefs(field(fname, values, _), Id sname) = {<sname, source> | ref(source) <- values};
-
-public set[Message] check(f:format(name, extensions, defaults, sequence, structures), rel[Id, Id] fields, rel[Id, Id] refs) =
-	checkDuplicateStructureNames(structures) + checkUndefinedSequenceNames(sequence.symbols, structures) + checkDuplicateFieldNames(structures)
-		+ checkRefs(structures, fields);
+public set[Message] check(f:format(name, extensions, defaults, sequence, structures), Context ctx)
+	= checkDuplicateStructureNames(structures)
+	+ checkUndefinedSequenceNames(sequence.symbols, structures)
+	+ checkDuplicateFieldNames(structures)
+	+ checkRefs(structures, ctx.fields);
 
 public set[Message] checkDuplicateStructureNames(list[Structure] ls) =
 	{error("duplicate structure name: <sname.val>", sname@location) | struct(sname, _) <- ls, structs[sname] > 1}

@@ -7,28 +7,27 @@ import Type;
 import lang::dimitri::levels::l1::AST;
 
 /*
-	propagate the first value of referenced fields
+	propagate the *first* value of referenced fields
 */
-public Format propagateConstants(Format format) {
-
-	rel[Id s, Id f, Field v] specMap = {<s, f.name, f> | struct(s,fs) <- format.structures, Field f <- fs};
-	
-	Id sname = id("");
-	
-	return outermost visit (format) {
-		case struct(name, _) : sname = name;
-		case field(fname, values, format) : insert field(fname, getVals(sname, values, specMap), format);
+public Format propagateConstants(Format format) =
+	visit (format) {
+		case struct(sname, fields) => propagateConstants(sname, fields, specMap)
 	}
-}
+	when specMap := {<s, f.name, f> | struct(s,fs) <- format.structures, Field f <- fs};
 
-public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, Field] specMap) {
-	return visit(originalValues) {
+public Structure propagateConstants(Id sname, list[Field] fields, rel[Id s, Id f, Field v] smap) =
+	struct(sname, newFields)
+	when newFields := visit (fields) {
+		case field(fname, values, format) => field(fname, getVals(sname, values, smap), format)
+	};
+
+public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, Field] specMap) =
+	visit(originalValues) {
 		case Scalar s => getVals(sname, s, specMap)
-	}
-}
+	};
 
-public list[Scalar] getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = val when
+public Scalar getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = val when
 	sourceField := specMap[sname, source],
-	[theField] := sourceField,
+	{theField} := sourceField,
 	[val] := theField.values;
-public default list[Scalar] getVals(Id _, Scalar original, rel[Id, Id, Field] _) = original;
+public default Scalar getVals(Id _, Scalar original, rel[Id, Id, Field] _) = original;
