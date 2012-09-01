@@ -18,7 +18,7 @@ public Format propagateConstants(Format format) =
 public Structure propagateConstants(Id sname, list[Field] fields, rel[Id s, Id f, Field v] smap) =
 	struct(sname, newFields)
 	when newFields := visit (fields) {
-		case field(fname, values, format) => field(fname, getVals(sname, values, smap), format)
+		case field(fname, list[Scalar] values, format) => field(fname, getVals(sname, values, smap), format)
 	};
 
 public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, Field] specMap) =

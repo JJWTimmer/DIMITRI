@@ -32,7 +32,7 @@ private Format removeMultipleExpressions(Format format) {
 
 	list[Field] expandMultipleExpressions(list[Field] fields) {
 		return ret:for (f <- fields) {
-			if (f.values != []) {
+			if (f has values, f.values != []) {
 				int i = 0;
 				for (c <- f.values) {
 					append ret: field(id(getFName(i, f.name.val)), [c], f.format);
@@ -67,7 +67,7 @@ private Format removeStrings(Format format) {
 		}
 	
 		return ret: for (f <- fields) {
-			if (f.values != [], string(sval) :=  f.values[0]) {
+			if (f has values, f.values != [], string(sval) :=  f.values[0]) {
 				localformat = visit (f.format) {
 					case formatSpecifier("unit", _) => formatSpecifier("unit", "byte")
 					case formatSpecifier("sign", _) => formatSpecifier("sign", "false")

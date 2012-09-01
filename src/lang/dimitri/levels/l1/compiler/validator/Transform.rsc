@@ -16,6 +16,7 @@ data EType = \value() | size();
 map[str,str] mapping = ("*":"_");
 
 alias FRefs = rel[str,str,EType,Statement];
+alias FRef  = tuple[str,str,EType,Statement];
 
 public list[Structure] getStructures(Format format) {
 	list[Structure] structures = [];
@@ -26,7 +27,7 @@ public list[Structure] getStructures(Format format) {
 		sname = struct.name.val;
 		list[Statement] statements = [];
 		for (field <- struct.fields) {
-			statements += field2statements(sname, field, frefs);
+			statements += field2statements(sname, field, frefs, format);
 		}
 		structures += structure(sname, statements);
 	}
@@ -38,19 +39,28 @@ public FRefs getFRefs(Format format) {
 	FRefs frefs = {};
 	
 	top-down visit (format) {
-		case struct(id(sn)) : sname = sn; 
-		case fld:field(id(fname), values, _) : {
-			if (!isVariableSize(fld), (fld@refdep)?, dependency(str depName) := fld@refdep ) {
-				valName = "<sname>_<fname>";
-				validateStatement = validate(valName, [generateScalar(sname, values[0])]);
-				frefs += <sname, depName, \value(), validateStatement>;
-			}
-		}
+		case Structure s : frefs = getFRefs(s, frefs);
 	}
 	
 	return frefs;
 }
 
+public FRefs getFRefs( Structure::struct(id(sname), list[Field] fields),FRefs frefs) = frefs + {*getFRefs(fld, sname) | fld <- fields};
+
+public FRefs getFRefs(fld:field(id(fname), list[Scalar] vals, set[FormatSpecifier] _), str sname) {
+	FRefs res = {};
+	if (!isVariableSize(fld), (fld@refdep)?, dependency(str depName) := fld@refdep ) {
+		valName = "<sname>_<fname>";
+		validateStatement = validate(valName, [generateScalar(sname, vals[0])]);
+		res += <sname, depName, \value(), validateStatement>;
+	}
+	
+	return res;
+}
+
+public default FRefs getFRefs(Field fld, FRefs frefs, str sname) {
+	throw "Unexpected field type: <fld>";
+}
 
 public bool hasValueSpecification(field(_, [],_)) {
 	return false;
@@ -97,8 +107,8 @@ public VValue generateScalar(str struct, ref(id(name))) = var("<struct>_<name>")
 public VValue generateScalar(str struct, number(int i)) = con(i);
 public default VValue generateScalar(str struct, x) { throw "generateScalar: unknown Scalar type: <x>"; }
 
-public list[Statement] field2statements (str sname, Field field, FRefs frefs) = variableSizeFields2statements(sname, field, frefs) when isVariableSize(field);
-public list[Statement] field2statements (str sname, Field field, FRefs frefs) = fixedSizefields2statements(sname, field, frefs) when !isVariableSize(field);
+public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format) = variableSizeFields2statements(sname, field, frefs) when field has values, isVariableSize(field);
+public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format) = fixedSizefields2statements(sname, field, frefs) when field has values, !isVariableSize(field);
 
 public list[Statement] variableSizeFields2statements (str sname, Field field, FRefs frefs) {
 	list[Statement] statements = [];
@@ -147,7 +157,5 @@ public list[Statement] fixedSizefields2statements (str sname, Field field, FRefs
 	return statements;
 }
 
-
-
-
-public Validator getValidator(Format format) = validator(toUpperCase(format.name.val) + "Validator", format.name.val, getStructures(format));
+public Validator getValidator(Format format)
+	= validator(toUpperCase(format.name.val) + "Validator", format.name.val, getStructures(format));

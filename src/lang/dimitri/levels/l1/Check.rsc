@@ -44,7 +44,7 @@ public set[Message] checkDuplicateFieldNames(list[Field] fields) =
 
 public set[Message] checkRefs(list[Structure] structs, rel[Id, Id] fields) = {*checkRefs(struct, fields) | struct <- structs};
 public set[Message] checkRefs(Structure struct, rel[Id, Id] fields) = {*checkRefs(field, fields, struct.name) | field <- struct.fields};
-public set[Message] checkRefs(Field f, rel[Id, Id] fields, Id sname) =
+public default set[Message] checkRefs(Field f, rel[Id, Id] fields, Id sname) =
 	{*checkRefs(val, fields, sname) | val <- f.values}
 	+ {*checkRefs(val, fields, sname) | variableSpecifier(_, val) <- f.format};
 public set[Message] checkRefs(ref(source), rel[Id, Id] fields, Id sname) =

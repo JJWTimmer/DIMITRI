@@ -2,9 +2,12 @@ module lang::dimitri::levels::l1::prettyPrinting::Format2box
 
 import lang::box::util::Box;
 import List;
+import String;
 
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::prettyPrinting::BoxHelper;
+
+map[str,str] mapping = ("*":"_");
 
 public Box format2box(Format f) =
   V([
@@ -43,7 +46,7 @@ public default Box scalar2box(Scalar s) { throw "unknow scalar: <s>"; }
 public Box sequence2box(list[SequenceSymbol] symbols)
 	= V([
 		KW(L("sequence")),
-		I([V(list2boxlist(symbols, symbol2box))[@vs=0]])[@ts=1]
+		I([V(list2boxlist(symbols, symbol2box))[@vs=0]])[@is=1]
 	])[@vs=0];
 	
 public Box symbol2box( SequenceSymbol::struct(id(name))) = VAR(L(name));
@@ -68,15 +71,15 @@ public Box fields2box(list[Field] fields)
 
 public Box field2box(fieldRaw(id(fname), fieldValue(format)))
 	= H([
-		VAR(L(fname)),
+		VAR(L(escape(fname, mapping))),
 		L(": "),
 		*hsepList(format, " ", format2box),
 		L(";")
 	])[@hs=0];
 	
-public Box field2box(fieldRaw(id(fname), fieldValue(values, format)))
+public Box field2box(fieldRaw(id(fname), fieldValue(list[Scalar] values, format)))
 	= H([
-		VAR(L(fname)),
+		VAR(L(escape(fname, mapping))),
 		L(": "),
 		H([
 			H([
@@ -90,21 +93,21 @@ public Box field2box(fieldRaw(id(fname), fieldValue(values, format)))
 	])[@hs=0];
 
 public Box field2box(fieldNoValue(id(fname)) )
-	= H([VAR(L(fname)), L(";")])[@hs=0];
+	= H([VAR(L(escape(fname, mapping))), L(";")])[@hs=0];
 
 public Box field2box(field(id(fname), [], {}) )
-	= H([VAR(L(fname)), L(";")])[@hs=0];
+	= H([VAR(L(escape(fname, mapping))), L(";")])[@hs=0];
 
 public default Box field2box(Field fld)
 	= H([
-		VAR(L(fld.name.val)),
+		VAR(L(escape(fld.name.val, mapping))),
 		L(": "),
 		H([
 			H([
-				*hsepList(values, ", ", scalar2box)
+				*hsepList(fld.values, ", ", scalar2box)
 			])[@hs=0],
 			H([
-				*hsepList(format, " ", format2box)
+				*hsepList(fld.format, " ", format2box)
 			])[@hs=0]
 		])[@hs=1],
 		L(";")

@@ -1,13 +1,13 @@
-module lang::dimitri::levels::l1::prettyPrinting::PrettyPrinting
+module lang::dimitri::levels::l3::prettyPrinting::PrettyPrinting
 
 import ParseTree;
 import IO;
 import lang::box::util::Box2Text;
 
-import lang::dimitri::levels::l1::AST;
-import lang::dimitri::levels::l1::Parse;
-import lang::dimitri::levels::l1::prettyPrinting::Format2box;
-import lang::dimitri::levels::l1::prettyPrinting::ImplodeNoDesugar;
+import lang::dimitri::levels::l3::AST;
+import lang::dimitri::levels::l3::Parse;
+import lang::dimitri::levels::l3::prettyPrinting::Format2box;
+import lang::dimitri::levels::l3::prettyPrinting::ImplodeNoDesugar;
 
 public str prettyPrint(Format f) = format(format2box(f));
 

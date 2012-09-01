@@ -3,26 +3,36 @@ module lang::dimitri::levels::l1::compiler::validator::GenerateStructureJava
 import lang::dimitri::levels::l1::compiler::validator::ADT;
 
 public str generateStructure(Structure struct) {
-	str ret = "private boolean parse<struct.name>() throws java.io.IOException {\n		markStart();\n";
+	str ret = "private boolean parse<struct.name>() throws java.io.IOException {
+			  '		markStart();\n";
 	int i = 0;
-	for (s <- struct.statements) {
-		ret += "		";
-		switch (s) {
-			case ldeclV(integer(bool sign, _, int bits), str n): ret += "<generateIntegerDeclaration(sign, bits, n)>";
-			case ldeclB(str n): ret += "SubStream <n> = new SubStream();";
-			case calc(str n, VValue e): ret += "<n> = <generateValueExpression(e)>;";
-			case readValue(Type t, str n): ret += "<n> = <generateReadValueMethodCall(t)>;";
-			case readBuffer(str s, str n): ret += "<n>.addFragment(_input, <s>);";
-			case readUntil(Type t, list[VValue] l, bool includeTerminator): ret += "<generateValueSet(l, "vs<i>")>if (!_input.<t.sign ? "signed()" : "unsigned()">.<(littleE() := t.endian) ? "byteOrder(LITTLE_ENDIAN)" : "byteOrder(BIG_ENDIAN)">.includeMarker(<includeTerminator ? "true" : "false">).readUntil(<t.bits>, vs<i>).validated) return noMatch();";
-			case skipValue(Type t): ret += "if (!_input.skipBits(<t.bits>)) return noMatch();";
-			case skipBuffer(str s): ret += "if (_input.skip(<s>) != <s>) return noMatch();";
-			case validate(str v, list[VValue] l): ret += "<generateValueSet(l, "vs<i>")>\n		if (!vs<i>.equals(<v>)) return noMatch();";
-		}
-		ret += "\n";
+	for (stmt <- struct.statements) {
+		ret += "		<generateStructure(stmt, i)>\n";
 		i += 1;
 	}
-	ret += "		addSubSequence(\"<struct.name>\");\n		return true;\n	}\n";
+	ret += "		addSubSequence(\"<struct.name>\");
+		   '		return true;
+		   '	}
+		   '";
 	return ret;
+}
+
+
+public str generateStructure(ldeclV(integer(bool sign, _, int bits), str n), int i) = "<generateIntegerDeclaration(sign, bits, n)>";
+public str generateStructure(ldeclB(str n), int i) 	= "SubStream <n> = new SubStream();";
+public str generateStructure(calc(str n, VValue e), int i) = "<n> = <generateValueExpression(e)>;";
+public str generateStructure(readValue(Type t, str n), int i) = "<n> = <generateReadValueMethodCall(t)>;";
+public str generateStructure(readBuffer(str s, str n), int i) = "<n>.addFragment(_input, <s>);";
+public str generateStructure(readUntil(Type t, list[VValue] l, bool includeTerminator), int i)
+	= "<generateValueSet(l, "vs<i>")>if (!_input.<t.sign ? "signed()" : "unsigned()">.<(littleE() := t.endian) ? "byteOrder(LITTLE_ENDIAN)" : "byteOrder(BIG_ENDIAN)">.includeMarker(<includeTerminator ? "true" : "false">).readUntil(<t.bits>, vs<i>).validated) return noMatch();";
+public str generateStructure(skipValue(Type t), int i) = "if (!_input.skipBits(<t.bits>)) return noMatch();";
+public str generateStructure(skipBuffer(str s), int i) = "if (_input.skip(<s>) != <s>) return noMatch();";
+public str generateStructure(validate(str v, list[VValue] l), int i)
+	= "<generateValueSet(l, "vs<i>")>
+	  '		if (!vs<i>.equals(<v>)) return noMatch();";
+
+public default str generateStructure(Statement st, int _) {
+	throw "Unknown Statement <st>";
 }
 
 public str generateIntegerDeclaration(bool sign, int bits, str name) {

@@ -21,20 +21,27 @@ public list[Global] getGlobals(Format format) {
 	sname = "";
 	
 	top-down visit(format) {
-		case struct(id(sn), _) : sname = sn;
-		case fld:field(id(fname), _,_) : {
-			if ((fld@ref)?, global() := fld@ref) {
-				if (isVariableSize(fld)) {
-					str bufName = "<sname>_<fname>";
-					globals += gdeclB(bufName);
-				} else {
-					str valName = "<sname>_<fname>";
-					Type t = makeType(fld);
-					globals += gdeclV(t, valName);
-				}
-			}
-		}
+		case struct(id(sn), fields) : globals = getGlobals(sn, fields, globals);
 	}
 
 	return globals;
+}
+
+public list[Global] getGlobals(str sname, list[Field] fields, list[Global] globals) =  globals + [*getGlobals(fld, sname) | fld <- fields];
+
+public default list[Global] getGlobals(Field fld, str sname) {
+	list[Global] res = [];
+	fname = fld.name.val;
+	
+	if ((fld@ref)?, global() := fld@ref) {
+		if (isVariableSize(fld)) {
+			bufName = "<sname>_<fname>";
+			res += gdeclB(bufName);
+		} else {
+			valName = "<sname>_<fname>";
+			Type t = makeType(fld);
+			res += gdeclV(t, valName);
+		}
+	}
+	return res;
 }

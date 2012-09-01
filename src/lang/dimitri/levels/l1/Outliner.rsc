@@ -5,7 +5,6 @@ import ParseTree;
 
 import lang::dimitri::levels::l1::Implode;
 import lang::dimitri::levels::l1::AST;
-import lang::dimitri::levels::l1::compiler::Debug;
 
 public node outline(Tree tree) = outline(implode(tree));
 

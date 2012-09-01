@@ -1,12 +1,13 @@
 module lang::dimitri::levels::l1::compiler::validator::Generate
+extend lang::dimitri::levels::l1::compiler::validator::GenerateSymbolJava;
+extend lang::dimitri::levels::l1::compiler::validator::GenerateStructureJava;
 
 import String;
 
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::compiler::validator::ADT;
-import lang::dimitri::levels::l1::compiler::validator::GenerateSymbolJava;
-import lang::dimitri::levels::l1::compiler::validator::GenerateStructureJava;
 import lang::dimitri::levels::l1::compiler::SequenceSymbol2String;
+
 
 public str generate(list[SequenceSymbol] sequence, str extension, Validator vld, str packageName) =
 	getPackageName(packageName) + getImports() + getClassDeclaration(sequence, extension, vld);

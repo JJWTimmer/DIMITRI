@@ -25,7 +25,7 @@ public void registerL2() {
 			menu("Dimitri",
 				[
 					action("Compile Format", void (Tree tree, loc selection) { compileL2(selection); }),
-					action("Remove Comments (format)", void (Tree tree, loc selection) { prettyPrintFile(selection); })
+					action("Format && Remove Comments", void (Tree tree, loc selection) { prettyPrintFile(selection); })
 				]
 			)
 		)
@@ -39,7 +39,7 @@ public Tree parseL2(loc org) = parse(org).top;
 
 public Format implodeL2(Tree t) = implode(t);
 
-public Tree checkL2(Tree t) = t[@messages=lang::dimitri::levels::l2::Check::check(ast)] when ast := implode(t);
+public Tree checkL2(Tree t) = t[@messages=check(ast)] when ast := implode(t.top);
 
 public void compileL2(loc file) {
 	tree = parse(file).top;

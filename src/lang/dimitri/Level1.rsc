@@ -29,7 +29,7 @@ public void registerL1() {
 			menu("Dimitri",
 				[
 					action("Compile Format", void (Tree tree, loc selection) { compileL1(selection); }),
-					action("Remove Comments (format)", void (Tree tree, loc selection) { prettyPrintFile(selection); })
+					action("Format && Remove Comments", void (Tree tree, loc selection) { prettyPrintFile(selection); })
 				]
 			)
 		)
@@ -47,7 +47,7 @@ public node implodeNoDesugarL1(Tree format) = implodeNoDesugar(format);
 
 public void prettyPrintL1(loc org) = prettyPrint(org);
 
-public Tree checkL1(Tree input) = input[@messages=check(ast)] when ast := implode(input);
+public Tree checkL1(Tree input) = input[@messages=check(ast)] when ast := implode(input.top);
 
 public void compileL1(loc file) {
 	tree = parse(file).top;
