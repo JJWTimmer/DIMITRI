@@ -1,5 +1,6 @@
 module lang::dimitri::levels::l1::compiler::PropagateConstants
 
+import IO;
 import Set;
 import List;
 import Type;
@@ -9,25 +10,34 @@ import lang::dimitri::levels::l1::AST;
 /*
 	propagate the *first* value of referenced fields
 */
-public Format propagateConstants(Format format) =
-	visit (format) {
-		case struct(sname, fields) => propagateConstants(sname, fields, specMap)
+public Format propagateConstants(Format format) {
+	solve(format) {
+		specMap = {<s, f.name, f> | struct(s,fs) <- format.structures, Field f <- fs};
+		visit (format) {
+			case struct(sname, fields) => propagateConstants(sname, fields, specMap)
+		}
 	}
-	when specMap := {<s, f.name, f> | struct(s,fs) <- format.structures, Field f <- fs};
+	return format;
+}
 
 public Structure propagateConstants(Id sname, list[Field] fields, rel[Id s, Id f, Field v] smap) =
 	struct(sname, newFields)
 	when newFields := visit (fields) {
-		case field(fname, list[Scalar] values, format) => field(fname, getVals(sname, values, smap), format)
+		case field(fname, list[Scalar] values, format) =>
+			field(fname, getVals(sname, values, smap), getVals(sname, format, smap))
 	};
 
 public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, Field] specMap) =
 	visit(originalValues) {
-		case Scalar s => getVals(sname, s, specMap)
+		case [Scalar s] => getVals(sname, s, specMap)
+	};
+	
+public set[FormatSpecifier] getVals(Id sname, set[FormatSpecifier] format, rel[Id, Id, Field] specMap) =
+	visit(format) {
+		case Scalar s => vals[0] when vals := getVals(sname, s, specMap), vals != [] 
 	};
 
-public Scalar getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = val when
+public list[Scalar] getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = theField.values when
 	sourceField := specMap[sname, source],
-	{theField} := sourceField,
-	[val] := theField.values;
-public default Scalar getVals(Id _, Scalar original, rel[Id, Id, Field] _) = original;
+	{theField} := sourceField;
+public default list[Scalar] getVals(Id _, Scalar original, rel[Id, Id, Field] _) = [original];

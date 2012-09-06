@@ -8,13 +8,8 @@ public list[Statement]  callbackFields2statements(str sname, f:field(id(fnameraw
 	list[Statement] statements = [];
 	fname = escape(fnameraw, mapping);
 	
-	map[str, str] custom = ();
-	map[str, list[VValue]] references = ();
-	for (parameter(id(key), set[Scalar] vals)  <- cb.parameters) {
-		custom += (key : val | string(val) <- vals );
-		specs = [generateSpecification(sname, val) | Scalar val <- vals, string(_) !:= val];
-		references += (key : specs);
-	}
+	map[str, str] custom = getCustomArguments(cb.parameters);
+	map[str, list[VValue]] references = getReferences(cb.parameters, sname);
 
 	str valName = "<sname>_<fname>";
 	if ( !(f@ref)? || ((f@ref)? && global() !:= f@ref) ) statements += ldeclB(valName);
@@ -42,6 +37,24 @@ public list[Statement]  callbackFields2statements(str sname, f:field(id(fnameraw
 	return statements;
 }
 
+private map[str, str] getCustomArguments(set[Parameter] parameters) {
+	map[str, str] custom = ();
+	for (parameter(id(key), list[Scalar] vals)  <- parameters) {
+		custom += (key : val | string(val) <- vals );
+	}
+	return custom;
+}
+
+private map[str, list[VValue]] getReferences(set[Parameter] parameters, str sname) {
+	map[str, list[VValue]] references = ();
+	for (parameter(id(key), list[Scalar] vals)  <- parameters) {
+		specs = [generateSpecification(sname, s) | Scalar s <- vals, string(_) !:= s];
+		if (specs != [])
+			references += (key : specs);
+	}
+	return references;
+}
+
 private VValue generateSpecification(str struct, number(int i)) = con(i);
 private VValue generateSpecification(str struct, ref(id(fname))) = var("<struct>_<escape(fname, mapping)>");
 private VValue generateSpecification(str struct, crossRef(id(sname), id(fname))) = var("<sname>_<escape(fname, mapping)>");
@@ -65,8 +78,8 @@ public FRefs getFRefs(fld:field(id(fname), Callback cb, set[FormatSpecifier] _),
 	if (hasLocalSize(fld), (fld@refdep)?, dependency(str depName) := fld@refdep ) {
 		valName = "<sname>_<fname>";
 		lenName = "<sname>_<fname>_len";
-		validateStatement = validateWithCallback(valName, lenName, cb.fname.name.val, custom, references, false);
-		frefs += frefs += <sname, depName, \value(), validateStatement>;
+		validateStatement = validateWithCallback(valName, lenName, cb.fname.name.val, getCustomArguments(cb.parameters), getReferences(cb.parameters), false);
+		frefs += <sname, depName, \value(), validateStatement>;
 	}
 	
 	return frefs;

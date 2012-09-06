@@ -47,7 +47,7 @@ public node implodeNoDesugarL1(Tree format) = implodeNoDesugar(format);
 
 public void prettyPrintL1(loc org) = prettyPrint(org);
 
-public Tree checkL1(Tree input) = input[@messages=check(ast)] when ast := implode(input.top);
+public Tree checkL1(Tree input) = input[@messages=check(ast)] when ast := implode(input);
 
 public void compileL1(loc file) {
 	tree = parse(file).top;

@@ -27,7 +27,7 @@ public void compile(Format ast, str packageName) {
 
 	validatorADT = getValidatorL2(ast);
 
-text(validatorADT);
+//text(validatorADT);
 	javaPathPrefix = "dimitri/src/<replaceAll(packageName, ".", "/")>/";
 
 	writeFile(|project://<javaPathPrefix>/<toUpperCase(ast.name.val)>Validator.java|,

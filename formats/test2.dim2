@@ -1,4 +1,4 @@
-format l2t2
+format level2
 extension l2t2
 
 /*
@@ -27,7 +27,6 @@ S1 {
   ref: s;
   sz: size 2;
   szref: size sz;
-  fwcs: S2.y;
 }
 
 S2 {
@@ -37,5 +36,5 @@ S2 {
 }
 
 S3 {
-	fld: size S2.y;
+	fld: size 2;
 }

@@ -9,7 +9,7 @@ data FieldSpecifier = fieldValue(Callback call)
 					;
 
 data Callback = callback(FunctionName fname, set[Parameter] parameters);
-data Parameter = parameter(Id name, set[Scalar] values);
+data Parameter = parameter(Id name, list[Scalar] values);
 
 data FunctionName = func(Id name);
 

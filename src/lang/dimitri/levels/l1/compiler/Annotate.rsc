@@ -99,8 +99,7 @@ public rel[Id, Id, Dependency] makeDependencyEnvironment(Format format) {
 			order += <sname, fname, count>;
 			count += 1;
 		}
-		case Scalar scal: env = makeDependencyEnvironment(scal, sname, fname, env, order);
-
+		case Scalar scal : env = makeDependencyEnvironment(scal, sname, fname, env, order);
 	}
 	
 	for (<struct, field> <- env<0, 1>) {
@@ -111,14 +110,14 @@ public rel[Id, Id, Dependency] makeDependencyEnvironment(Format format) {
 	return deps;
 }
 
-public rel[Id struct, Id field, Id dep] makeDependencyEnvironment(ref(Id source), Id sname, Id fname, DepEnv env, rel[Id struct, Id field, int count] order) =
+public rel[Id, Id, Id] makeDependencyEnvironment(ref(Id source), Id sname, Id fname, rel[Id, Id, Id] env, rel[Id, Id, int] order) =
 	makeDependencyRef(sname, fname, source, env, order);
 	
-public default rel[Id struct, Id field, Id dep] makeDependencyEnvironment(Scalar _, Id _, Id _, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] _) = env;
+public default rel[Id, Id, Id] makeDependencyEnvironment(Scalar _, Id _, Id _, rel[Id, Id, Id] env, rel[Id, Id , int] _) = env;
 
 //target struct == source struct, check in call
-public rel[Id struct, Id field, Id dep] makeDependencyRef(Id sname, Id fname, Id source, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] order)
+public rel[Id, Id, Id] makeDependencyRef(Id sname, Id fname, Id source, rel[Id, Id, Id] env, rel[Id, Id, int] order)
 	= env + res
 	when isEmpty(order[sname, source]),
 	res := {<sname, fname, source>};
-public default rel[Id struct, Id field, Id dep] makeDependencyRef(Id sname, Id fname, Id source, rel[Id struct, Id field, Id dep] env, rel[Id struct, Id field, int count] order) = env;
+public default rel[Id, Id, Id] makeDependencyRef(Id sname, Id fname, Id source, rel[Id, Id, Id] env, rel[Id, Id, int] order) = env;

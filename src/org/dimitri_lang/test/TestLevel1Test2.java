@@ -8,7 +8,7 @@ import org.dimitri_lang.generated.*;
 public class TestLevel1Test2 {
 
 	public final static String TEST_DIRECTORY = "testdata";
-	public final static String TEST_FILE = "test2.l2t2";
+	public final static String TEST_FILE = "test2.l1t2";
 	private String _name;
 	
 	public TestLevel1Test2() {
@@ -17,7 +17,7 @@ public class TestLevel1Test2 {
 
 	@Test
 	public void testGeneratedValidator() {
-		Validator validator = new L1T2Validator();
+		Validator validator = new LEVEL1Validator();
 		ValidatorInputStream stream = ValidatorInputStreamFactory.create(TEST_DIRECTORY + "/" + _name);
 		validator.setStream(stream);
 		ParseResult result = validator.tryParse();

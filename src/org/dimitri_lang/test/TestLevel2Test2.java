@@ -17,7 +17,7 @@ public class TestLevel2Test2 {
 
 	@Test
 	public void testGeneratedValidator() {
-		Validator validator = new L2T2Validator();
+		Validator validator = new LEVEL2Validator();
 		ValidatorInputStream stream = ValidatorInputStreamFactory.create(TEST_DIRECTORY + "/" + _name);
 		validator.setStream(stream);
 		ParseResult result = validator.tryParse();

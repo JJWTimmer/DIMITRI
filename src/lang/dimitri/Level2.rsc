@@ -39,7 +39,7 @@ public Tree parseL2(loc org) = parse(org).top;
 
 public Format implodeL2(Tree t) = implode(t);
 
-public Tree checkL2(Tree t) = t[@messages=check(ast)] when ast := implode(t.top);
+public Tree checkL2(Tree t) = t[@messages=check(ast)] when ast := implode(t);
 
 public void compileL2(loc file) {
 	tree = parse(file).top;

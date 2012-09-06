@@ -41,7 +41,7 @@ private str generateChoiceSeqSymbols(set[SequenceSymbol] symbols, bool iterate, 
 		sequence = reverse(sequence);
 		bool innerMost = true;
 		while (!isEmpty(sequence)) {
-			res += generateChoiceSeqSymbol(res, head(sequence), innerMost, iterate, label);
+			res = generateChoiceSeqSymbol(res, head(sequence), innerMost, iterate, label);
 			innerMost = false;
 			sequence = tail(sequence);
 		}
@@ -65,15 +65,15 @@ private str generateChoiceSeqSymbol(str res, SequenceSymbol s, bool final, bool 
 								  : "continue";
 	if (res == "") {
 		switch (s) {
-			case struct(id(name)): res += "if (parse<name>()) {
-										  '	<iterate ? continueStatement : breakTarget>;
-										  '}
-										  ";
-			case optionalSeq(struct(id(name))): res +=	"parse<name>();
+			case SequenceSymbol::struct(id(sname)): res = "if (parse<sname>()) {
+										   				   '	<iterate ? continueStatement : breakTarget>;
+										   				   '}
+										  				   '";
+			case optionalSeq(struct(id(sname))): res =	"parse<sname>();
 														'<iterate ? continueStatement : breakTarget>;
 														";
-			case zeroOrMoreSeq(struct(id(name))): res +=	"for (;;) {
-															'	if (parse<name>()) {
+			case zeroOrMoreSeq(struct(id(sname))): res =	"for (;;) {
+															'	if (parse<sname>()) {
 															'		<continueStatement>;
 															'	}
 															'	<breakTarget>;
@@ -82,14 +82,14 @@ private str generateChoiceSeqSymbol(str res, SequenceSymbol s, bool final, bool 
 		}
 	} else {
 		switch (s) {
-			case struct(id(name)): res =	"if (parse<name>()) {
+			case struct(id(sname)): res =	"if (parse<sname>()) {
 											'	<res>
 											'}
 											";
-			case optionalSeq(struct(id(name))): res =	"parse<name>();
+			case optionalSeq(struct(id(sname))): res =	"parse<sname>();
 													 	'<res>";
-			case zeroOrMoreSeq(struct(id(name))): res =	"for (;;) {
-														'	if (parse<name>()) {
+			case zeroOrMoreSeq(struct(id(sname))): res ="for (;;) {
+														'	if (parse<sname>()) {
 														'		<continueStatement>;
 														'	}
 														'	<breakTarget>;
@@ -112,5 +112,6 @@ private bool containsEmptyList(set[SequenceSymbol] symbols) {
 private str generateEOFCheck(bool allowEOF) {
 	return 	"if (_input.atEOF()) {
 			'	return <allowEOF ? "yes" : "no">();
-			'}";
+			'}
+			'allowEOF = <allowEOF>;";
 }

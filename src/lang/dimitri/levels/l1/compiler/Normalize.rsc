@@ -48,50 +48,40 @@ private Format removeMultipleExpressions(Format format) {
 }
 
 private Format removeStrings(Format format) {
-	// [struct], [field], [num strings in field after expansion]
-	rel[str sname, str name, int count] expandedStrings = {};
-	
-	/*
-		in: struct name, list of fields of that struct
-		out: list of fields where strings are split into values of int
-		side effect: update expandedStrings
-		
-		questionmark: sname hides sname above?
-	*/
-	list[Field] expandStrings(str sname, list[Field] fields) {
-		str getFName(int i, str fname) {
-			if (i > 0) {
-				fname += "*s<i>";
-			}
-			return fname;
-		}
-	
-		return ret: for (f <- fields) {
-			if (f has values, f.values != [], string(sval) :=  f.values[0]) {
-				localformat = visit (f.format) {
-					case formatSpecifier("unit", _) => formatSpecifier("unit", "byte")
-					case formatSpecifier("sign", _) => formatSpecifier("sign", "false")
-					case formatSpecifier("type", _) => formatSpecifier("type", "integer")
-					case variableSpecifier("size", _) => variableSpecifier("size", number(1))
-				};
-				
-				fname = f.name.val;
-				
-				int i = 0;
-				for (c <- chars(sval)) {
-					append ret: field(id(getFName(i, fname)), [number(c)], localformat);
-					i += 1;
-				}
-			}
-			else {
-				append ret: f;
-			}
-		};
-	}
-
 	return visit (format) {
 		case struct(sname, list[Field] fields) => struct(sname, expandStrings(sname.val, fields))
 	}
+}
+
+private list[Field] expandStrings(str sname, list[Field] fields) {
+	str getFName(int i, str fname) {
+		if (i > 0) {
+			fname += "*s<i>";
+		}
+		return fname;
+	}
+
+	return ret: for (f <- fields) {
+		if (f has values, f.values != [], string(sval) :=  f.values[0]) {
+			localformat = visit (f.format) {
+				case formatSpecifier("unit", _) => formatSpecifier("unit", "byte")
+				case formatSpecifier("sign", _) => formatSpecifier("sign", "false")
+				case formatSpecifier("type", _) => formatSpecifier("type", "integer")
+				case variableSpecifier("size", _) => variableSpecifier("size", number(1))
+			};
+			
+			fname = f.name.val;
+			
+			int i = 0;
+			for (c <- chars(sval)) {
+				append ret: field(id(getFName(i, fname)), [number(c)], localformat);
+				i += 1;
+			}
+		}
+		else {
+			append ret: f;
+		}
+	};
 }
 
 private Format removeNotSequence(Format format) {

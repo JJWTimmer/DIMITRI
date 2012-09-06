@@ -18,7 +18,7 @@ public class TestLevel3Test2 {
 
 	@Test
 	public void testGeneratedValidator() {
-		org.dimitri_lang.runtime.level3.Validator validator = new L3T2Validator();
+		org.dimitri_lang.runtime.level3.Validator validator = new LEVEL3Validator();
 		org.dimitri_lang.runtime.level3.ValidatorInputStream stream = org.dimitri_lang.runtime.level3.ValidatorInputStreamFactory.create(TEST_DIRECTORY + "/" + _name);
 		validator.setStream(stream);
 		ParseResult result = validator.tryParse();

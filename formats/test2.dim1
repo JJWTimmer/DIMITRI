@@ -1,15 +1,15 @@
-format l1t2
+format level1
 extension l1t2
 
-strings ascii
-sign false
-unit byte
-size 1
 type integer
 endian big
+sign false
+size 1
+strings ascii
+unit byte
 
 sequence
-  S1
+ S1
 
 structures
 

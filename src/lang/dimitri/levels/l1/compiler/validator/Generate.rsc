@@ -33,20 +33,24 @@ public str getExtension(str extension) = "	@Override
 										 ";
 public str getParseBody(list[SequenceSymbol] symbols) {
 	int label = 0;
-	return "	@Override
+	return
+	"	@Override
 	'	public ParseResult tryParseBody() throws java.io.IOException {
-	'		<for (symbol <- symbols) {>_currentSymbol = \"<writeSymbol(symbol)>\";
-	'		<generateSymbol(symbol, label)><label +=1; }>
+	'	<for (symbol <- symbols) {>
+	'		_currentSymbol = \"<symbol2string(symbol)>\";
+	'		<generateSymbol(symbol, label)>
+	'	<label += 1; }>
 	'		return yes();
 	'	}
-	";
+	'";
 }
+
 public str getFindFooter() =
 	"	@Override
 	'	public ParseResult findNextFooter() throws java.io.IOException {
 	'		return yes();
 	'	}
-	";
+	'";
 	
 public str getStructures(list[Structure] structs) =
 	"<for (struct <- structs) {>	<generateStructure(struct)>\n<}>";

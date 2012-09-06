@@ -1,18 +1,12 @@
-format l3t2
+format level3
 extension l3t2
 
 sequence
-  S1
-  S2
+ S1
 
 structures
 
 S1 {
-  a: 1;
-  b: S2.a;
-}
-
-S2 {
-  a: 0xFF;
-  b: uppercase(arg1="arg1", arg2="arg2", param=1+2+3, param2=0xFF+0xD8);
+  a: "cwi";
+  b: rot13(data=a);
 }
