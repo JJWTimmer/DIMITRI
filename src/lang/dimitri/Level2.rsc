@@ -2,6 +2,7 @@ module lang::dimitri::Level2
 
 import ParseTree;
 import util::IDE;
+import IO;
 
 import lang::dimitri::levels::l2::Outliner;
 import lang::dimitri::levels::l2::Parse;

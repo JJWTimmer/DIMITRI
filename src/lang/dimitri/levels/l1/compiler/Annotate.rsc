@@ -38,12 +38,13 @@ public default Field getDepAnnotation(Id sname, Field fld, DepEnv env) = fld;
 
 public Format annotateAllowEOF(Format format) {
 	bool allowEOF = true;
-	format.sequence.symbols = for (symbol <- format.sequence.symbols) {
+	rev = for (symbol <- reverse(format.sequence.symbols) ) {
 		if (choiceSeq(set[SequenceSymbol] symbols) := symbol, fixedOrderSeq([]) notin symbols) {
 			allowEOF = false;
 		}
 		append symbol[@allowEOF = allowEOF];
 	}
+	format.sequence.symbols = reverse(rev);
 	return format;
 }
 

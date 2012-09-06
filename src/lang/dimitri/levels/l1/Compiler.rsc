@@ -2,6 +2,7 @@ module lang::dimitri::levels::l1::Compiler
 
 import IO;
 import String;
+import util::ValueUI;
 
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::compiler::PropagateDefaults;
@@ -18,10 +19,13 @@ public void compile(Format ast, str packageName) {
 	ast = propagateConstants(ast);
 	ast = annotate(ast);
 
+//text(ast);
+
 	writeFile(|project://dimitri/formats/debug/<ast.name.val>.dim1|, prettyPrint(ast));
 	
 	validator = getValidator(ast);
-	
+//text(validator);
+
 	javaPathPrefix = "dimitri/src/<replaceAll(packageName, ".", "/")>/";
 	
 	writeFile(|project://<javaPathPrefix>/<toUpperCase(ast.name.val)>Validator.java|,

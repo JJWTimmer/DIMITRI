@@ -58,7 +58,7 @@ private str generateChoiceSeqSymbols(set[SequenceSymbol] symbols, bool iterate, 
 
 private str generateChoiceSeqSymbol(str res, SequenceSymbol s, bool final, bool iterate, int label) {
 	str breakTarget = final ?	"mergeSubSequence();
-								'break top<label>" 
+								'<iterate ? "continue" : "break"> top<label>" 
 							: 	"break";
 	str continueStatement = final ? "mergeSubSequence();
 									'continue"

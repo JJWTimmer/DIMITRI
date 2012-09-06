@@ -45,6 +45,11 @@ public class ValidatorInputStreamImpl extends ValidatorInputStream {
 		_sign = false;
 		_includeMarker = false;
 	}
+	
+	@Override
+	public int available() throws IOException {
+	  return _in.available();
+	}
 
 	@Override
 	public boolean isByteAligned() {

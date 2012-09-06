@@ -20,6 +20,9 @@ public str getImports() =
 	";
 public str getClassDeclaration(list[SequenceSymbol] sequence, str extension, validator(name, format, structs)) = 
 	"public class <name> extends Validator {
+	'
+	'private boolean allowEOF = false;
+	'
 	'<getConstructor(name, format)>
 	'<getExtension(extension)>
 	'<getParseBody(sequence)>

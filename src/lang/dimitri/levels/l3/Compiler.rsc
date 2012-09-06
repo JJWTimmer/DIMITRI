@@ -22,13 +22,13 @@ public void compile(Format ast, str packageName) {
 	ast = propagateConstants(ast);
 	ast = annotate(ast);
 	
-text(ast);
+//text(ast);
 
 	writeFile(|project://dimitri/formats/debug/<ast.name.val>.dim3|, prettyPrint(ast));
 
 	validatorADT = getValidatorL2(ast);
 
-text(validatorADT);
+//text(validatorADT);
 	javaPathPrefix = "dimitri/src/<replaceAll(packageName, ".", "/")>/";
 
 	writeFile(|project://<javaPathPrefix>/<toUpperCase(ast.name.val)>Validator.java|,
