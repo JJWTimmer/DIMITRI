@@ -16,14 +16,15 @@
 
 package org.dimitri_lang.custom;
 
-import org.dimitri_lang.runtime.level1.*;
-import org.dimitri_lang.runtime.level3.*;
-import org.dimitri_lang.runtime.level3.ValidatorInputStream;
-import org.rascalmpl.interpreter.staticErrors.RedeclaredTypeError;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.dimitri_lang.runtime.level1.Content;
+import org.dimitri_lang.runtime.level1.ValueSet;
+import org.dimitri_lang.runtime.level3.SubStream;
+import org.dimitri_lang.runtime.level3.ValidatorInputStream;
 
 public class Rot13Validator {
 
@@ -31,12 +32,15 @@ public class Rot13Validator {
 			String name, Map<String, String> configuration,
 			Map<String, List<Object>> arguments, boolean allowEOF)
 			throws IOException {
-		if (arguments.containsKey("data")) {
+		if (arguments.containsKey("data") && configuration.containsKey("alg")) {
 			List<Object> data = arguments.get("data");
 			Content content;
-			switch (name) {
-			case "rot13":
-				content = analyzeRot13(in, data);
+			switch (configuration.get("alg")) {
+			case "known":
+				content = analyzeRot13known(in, data);
+				break;
+			case "unknown":
+				content = analyzeRot13unknown(in, data);
 				break;
 			default:
 				throw new RuntimeException("unknown algorithm: " + name);
@@ -45,36 +49,61 @@ public class Rot13Validator {
 			return new Content(content.validated, content.data);
 		} else {
 			throw new RuntimeException(
-					"ROT13 did not get the data argument to compare to.");
+					"ROT13 did not get the data argument or the alg-string.");
 		}
 	}
-
-	private static Content analyzeRot13(ValidatorInputStream in, List<Object> data) {
-		byte[] bytes = new byte[data.size()];
-		boolean valid = true;
-		int counter = 0;
-		for (Object c : data) {
-			ValueSet rot13vs = new ValueSet();
-			int rot13char = (int) rot13((char) ((Long) c).intValue());
-			rot13vs.addEquals( rot13char);
-			Content charContent;
-			try {
-				charContent = in.readUntil(8, rot13vs);
-				if (!charContent.validated) {
-					valid = false;
-					bytes[counter] = charContent.data[0];
-				} else {
-					bytes[counter] = (byte) rot13char;
-				}
-			} catch (IOException e) {
-				valid = false;
-				break;
-			}
-			
-			counter++;
+	
+	private static Content analyzeRot13known(ValidatorInputStream in, List<Object> data) {
+		byte[] orig = new byte[data.size()];
+		
+		for (int i = 0; i < data.size(); i++) {
+			orig[i] = ((Long)data.get(i)).byteValue();
 		}
 		
-		return new Content(valid, bytes);
+		byte[] bytes = new byte[data.size()];
+		try {
+			in.read(bytes);
+		} catch (IOException e1) {
+			return new Content(false, null);
+		}
+		
+		byte[] encoded = new byte[bytes.length];
+		for (int i = 0; i < bytes.length; i++) {
+			char c = (char)bytes[i];
+			encoded[i] = (byte)rot13(c);
+		}
+		
+		if (Arrays.equals(encoded, orig))
+			return new Content(true, bytes);
+		
+		
+		return new Content(false, bytes);
+	}
+	
+	private static Content analyzeRot13unknown(ValidatorInputStream in, List<Object> data) {	
+		SubStream ss = (SubStream) data.get(data.size() - 1);
+
+		byte[] orig = ss.getLast();
+		int olen = orig.length;
+		
+		byte[] bytesIn = new byte[olen];
+		try {
+			in.read(bytesIn);
+		} catch (IOException e) {
+			return new Content(false, bytesIn);
+		}
+		
+		byte[] decoded = new byte[olen];
+		for (int i = 0; i < olen; i++) {
+			char c = (char)orig[i];
+			decoded[i] = (byte)rot13(c);
+		}
+		
+		if (Arrays.equals(decoded, bytesIn))
+			return new Content(true, bytesIn);
+		
+		
+		return new Content(false, bytesIn);
 	}
 
 	private static char rot13(char c) {

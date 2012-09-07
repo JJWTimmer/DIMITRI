@@ -11,7 +11,7 @@ public str generateL3(list[SequenceSymbol] sequence, str extension, Validator vl
 public str getImportsL3() =
 	"import static org.dimitri_lang.runtime.level1.ByteOrder.*;
 	'import org.dimitri_lang.runtime.level1.ParseResult;
-	'import org.dimitri_lang.runtime.level1.SubStream;
+	'import org.dimitri_lang.runtime.level3.SubStream;
 	'import org.dimitri_lang.runtime.level1.ValueSet;
 	'import org.dimitri_lang.runtime.level3.Validator;
 	'";

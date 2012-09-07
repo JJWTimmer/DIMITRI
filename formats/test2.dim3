@@ -3,10 +3,17 @@ extension l3t2
 
 sequence
  S1
+ S2
 
 structures
 
 S1 {
   a: "cwi";
-  b: rot13(data=a);
+  b: rot13(data=a,alg="known");
+}
+
+S2 {
+  len: size 2;
+  data: size len type string;
+  secret: rot13(data=data,alg="unknown");
 }
