@@ -4,12 +4,12 @@ import ParseTree;
 import util::IDE;
 import IO;
 
-//import lang::dimitri::levels::l4::Outliner;
+import lang::dimitri::levels::l4::Outliner;
 //import lang::dimitri::levels::l4::Check;
 import lang::dimitri::levels::l4::Parse;
 import lang::dimitri::levels::l4::Implode;
 import lang::dimitri::levels::l4::AST;
-//import lang::dimitri::levels::l4::prettyPrinting::PrettyPrinting;
+import lang::dimitri::levels::l4::prettyPrinting::PrettyPrinting;
 //import lang::dimitri::levels::l4::Compiler;
 
 public str LANG = "Dimitri L4";
@@ -18,14 +18,14 @@ public str PACKAGE = "org.dimitri_lang.generated";
 
 public void registerL4() {
 	registerLanguage(LANG, EXT, parseL4);
-	registerAnnotator(LANG, checkL4);
+	//registerAnnotator(LANG, checkL4);
 	registerOutliner(LANG, outlineL4);
 	contribution = {
 		popup(
 			menu("Dimitri",
 				[
 					//action("Compile Format", void (Tree tree, loc selection) { compileL4(selection); }),
-					//action("Format && Remove Comments", void (Tree tree, loc selection) { prettyPrintFile(selection); })
+					action("Format && Remove Comments", void (Tree tree, loc selection) { prettyPrintFile(selection); })
 				]
 			)
 		)

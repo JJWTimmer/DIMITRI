@@ -1,0 +1,31 @@
+format l4t1
+extension t14
+
+type integer
+endian big
+size 1+0+s1.i
+sign false
+strings ascii
+unit byte
+
+sequence
+ s1 s2
+
+structures
+
+s1 {
+  a: 1;
+  b: a;
+  c: "c";
+  d: 1+2;
+  e: d*3;
+  f: 1..10;
+  g: a|e;
+  h: !g;
+  i: "fout"+"sommetje";
+}
+
+s2 {
+  a;
+  b: rot13(alg="unknown", data=a);
+}
