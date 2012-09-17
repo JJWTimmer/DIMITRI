@@ -41,9 +41,8 @@ private list[Scalar] getFieldlist(Id sname, Id fname, Format format) {
 	}
 	
 	return [crossRef(sname, fld.name) | fld <- res];
-	
-	throw "no fields match";
 }
 
+//FIXME: do not use regex here
 private list[Field] getFields(str fname, list[Field] fields)
-	= [f | f <- fields, ( (/<fname>/ := f.name.val) || (/<fname.val>\*.+/ := f.name.val) )];
+	= [f | f <- fields, ( (/<fname>/ := f.name.val) || (/<fname>\*.+/ := f.name.val) )];

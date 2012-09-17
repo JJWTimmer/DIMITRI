@@ -11,13 +11,12 @@ import lang::dimitri::levels::l1::AST;
 	propagate the *first* value of referenced fields
 */
 public Format propagateConstants(Format format) {
-	solve(format) {
+	return solve(format) {
 		specMap = {<s, f.name, f> | struct(s,fs) <- format.structures, Field f <- fs};
-		visit (format) {
+		format = visit (format) {
 			case struct(sname, fields) => propagateConstants(sname, fields, specMap)
 		}
 	}
-	return format;
 }
 
 public Structure propagateConstants(Id sname, list[Field] fields, rel[Id s, Id f, Field v] smap) =
@@ -34,10 +33,10 @@ public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, F
 	
 public set[FormatSpecifier] getVals(Id sname, set[FormatSpecifier] format, rel[Id, Id, Field] specMap) =
 	visit(format) {
-		case Scalar s => vals[0] when vals := getVals(sname, s, specMap), vals != [] 
+		case Scalar s => val when [val] := getVals(sname, s, specMap) 
 	};
 
 public list[Scalar] getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = theField.values when
-	sourceField := specMap[sname, source],
-	{theField} := sourceField;
+	{theField} := specMap[sname, source],
+	theField has values;
 public default list[Scalar] getVals(Id _, Scalar original, rel[Id, Id, Field] _) = [original];
