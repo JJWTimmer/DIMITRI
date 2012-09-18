@@ -9,7 +9,7 @@ public list[Scalar] getVals(Id _, crossRef(struct, source), rel[Id, Id, Field] s
 	[oldVal] := theField.values,
 	ref(_) !:= oldVal;
 	
-public list[Scalar] getVals(Id sname, crossRef(struct, source), rel[Id, Id, Field] specMap) = [res] when
+public list[Scalar] getVals(Id _, crossRef(struct, source), rel[Id, Id, Field] specMap) = [res] when
 	{theField} := specMap[struct, source],
 	theField has values,
 	[oldVal] := theField.values,

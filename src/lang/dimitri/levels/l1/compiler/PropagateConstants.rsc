@@ -38,5 +38,6 @@ public set[FormatSpecifier] getVals(Id sname, set[FormatSpecifier] format, rel[I
 
 public list[Scalar] getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = theField.values when
 	{theField} := specMap[sname, source],
-	theField has values;
+	theField has values,
+	size(theField.values) == 1;
 public default list[Scalar] getVals(Id _, Scalar original, rel[Id, Id, Field] _) = [original];

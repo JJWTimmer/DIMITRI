@@ -14,6 +14,7 @@ public loc T22 = |project://dimitri/formats/test2.dim2|;
 public loc T13 = |project://dimitri/formats/test1.dim3|;
 public loc T23 = |project://dimitri/formats/test2.dim3|;
 public loc T14 = |project://dimitri/formats/test1.dim4|;
+public loc T24 = |project://dimitri/formats/test2.dim4|;
 public loc PNG1 = |project://dimitri/formats/png.dim1|;
 
 public void main() {

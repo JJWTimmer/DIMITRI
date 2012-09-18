@@ -1,0 +1,33 @@
+format l4t2
+extension t24
+
+type integer
+endian big
+sign false
+size 1
+strings ascii
+unit byte
+
+sequence
+ s1
+ s2
+
+structures
+
+s1 {
+  a: 1;
+  b: a;
+  c: "c";
+  d: 1+2;
+  e: d*3;
+  f: e+1/5;
+  g: -f;
+  h: size s1.g;
+  i;
+  j: i+2;
+}
+
+s2 {
+  a;
+  b: a;
+}
