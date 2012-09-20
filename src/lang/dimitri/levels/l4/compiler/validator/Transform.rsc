@@ -20,3 +20,16 @@ public VValue generateScalar(str struct, Scalar::not(Scalar exp))
 	= not(generateScalar(struct, exp));
 public VValue generateScalar(str struct, Scalar::range(Scalar lower, Scalar upper))
 	= range(generateScalar(struct, lower), generateScalar(struct, upper));
+	
+public list[VValue] generateScalar(str struct, Scalar e) {
+	if (or(Scalar l, Scalar r) := e) {
+		list[VValue] orList = [];
+		orList += generateScalar(struct, l);
+		orList += generateScalar(struct, r);
+		return orList;
+	} else {
+		list[VValue] orList = [];
+		orList += generateScalar(struct, e);
+		return orList;
+	}
+}

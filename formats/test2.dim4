@@ -20,14 +20,16 @@ s1 {
   c: "c";
   d: 1+2;
   e: d*3;
-  f: e+1/5;
-  g: -f;
-  h: size s1.g;
+  f: (e+1)/5;
+  g: h-1;
+  h: size a;
   i;
-  j: i+2;
+  j: i+2|4|8..10;
 }
 
 s2 {
   a;
   b: a;
+  c: -b sign true;
+  d: !(1..3);
 }

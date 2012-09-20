@@ -51,7 +51,7 @@ public FRefs getFRefs(fld:field(id(fname), list[Scalar] vals, set[FormatSpecifie
 	FRefs res = {};
 	if (!isVariableSize(fld), (fld@refdep)?, dependency(str depName) := fld@refdep ) {
 		valName = "<sname>_<fname>";
-		validateStatement = validate(valName, [generateScalar(sname, vals[0])]);
+		validateStatement = validate(valName, [*generateScalar(sname, vals[0])]);
 		res += <sname, depName, \value(), validateStatement>;
 	}
 	
@@ -149,7 +149,7 @@ public list[Statement] fixedSizefields2statements (str sname, Field field, FRefs
 		if (!(field@ref)? || local() := field@ref) statements += ldeclV(t, valName);
 		statements += readValue(t, valName);
 		if (hasValueSpecification(field), ( !(field@refdep)? || ((field@refdep)? && dependency(str _) !:= field@refdep) ) ) {
-			statements += validate(valName, [generateScalar(sname, field.values[0])]);
+			statements += validate(valName, [*generateScalar(sname, field.values[0])]);
 		}
 		statements += toList(frefs[sname,fname,\value()]);
 	}

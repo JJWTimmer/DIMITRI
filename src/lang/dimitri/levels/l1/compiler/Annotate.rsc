@@ -116,7 +116,7 @@ public rel[Id, Id, Id] makeDependencyEnvironment(ref(Id source), Id sname, Id fn
 	
 public default rel[Id, Id, Id] makeDependencyEnvironment(Scalar _, Id _, Id _, rel[Id, Id, Id] env, rel[Id, Id , int] _) = env;
 
-//target struct == source struct, check in call
+//target struct == source struct, check is in call
 public rel[Id, Id, Id] makeDependencyRef(Id sname, Id fname, Id source, rel[Id, Id, Id] env, rel[Id, Id, int] order)
 	= env + res
 	when isEmpty(order[sname, source]),

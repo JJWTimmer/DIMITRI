@@ -30,6 +30,6 @@ public void compile(Format ast, str packageName) {
 	javaPathPrefix = "dimitri/src/<replaceAll(packageName, ".", "/")>/";
 
 	writeFile(|project://<javaPathPrefix>/<toUpperCase(ast.name.val)>Validator.java|,
-		generateL3(ast.sequence.symbols, ast.extensions[0].val, validatorADT, packageName));
+		generateL4(ast.sequence.symbols, ast.extensions[0].val, validatorADT, packageName));
 
 }
