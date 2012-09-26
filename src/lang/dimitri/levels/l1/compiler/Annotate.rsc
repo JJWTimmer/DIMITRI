@@ -26,14 +26,21 @@ public Format annotateFieldRefs(Format format) =
 	when refenv := makeReferenceEnvironment(format),
 	refdepenv := makeDependencyEnvironment(format);
 
-public Structure annotateFieldRefs(Id sname, list[Field] fields, RefEnv refenv, DepEnv refdepenv) =
-	struct(sname, annoFields) when
-	annoFields := [getDepAnnotation(sname, getRefAnnotation(sname, f, refenv), refdepenv) | Field f <- fields];
+public Structure annotateFieldRefs(Id sname, list[Field] fields, RefEnv refenv, DepEnv refdepenv)
+	= struct(sname, annoFields) when
+	annoFields := [getDepAnnotation(sname, getRefAnnotation(sname, f, refenv), refdepenv) | f <- fields];
 	
-public Field getRefAnnotation(Id sname, Field fld, RefEnv env) = fld[@ref=r] when annotation := env[sname, fld.name], {r} := annotation;
-public default Field getRefAnnotation(Id sname, Field fld, RefEnv env) = fld;
+public Field getRefAnnotation(Id sname, Field fld, RefEnv env)
+	= fld[@ref=r]
+	when annotation := env[sname, fld.name],
+	{r} := annotation;
+public default Field getRefAnnotation(Id sname, Field fld, RefEnv env)
+	= fld;
 
-public Field getDepAnnotation(Id sname, Field fld, DepEnv env) = fld[@refdep=r] when annotation := env[sname, fld.name], {r} := annotation;
+public Field getDepAnnotation(Id sname, Field fld, DepEnv env)
+	= fld[@refdep=r]
+	when annotation := env[sname, fld.name],
+	{r} := annotation;
 public default Field getDepAnnotation(Id sname, Field fld, DepEnv env) = fld;
 
 public Format annotateAllowEOF(Format format) {
@@ -53,17 +60,16 @@ public Format annotateAllowEOF(Format format) {
 public RefEnv makeReferenceEnvironment(Format format) {
 	RefEnv env = {};
 	rel[Id struct, Id field, bool seen] order = {};
-	Id sname = id("");
-	Id fname = id("");
 
-	top-down visit (format) {
-		case struct(name, _): sname = name;
-		case Field f : {
-			fname = f.name;
-			order += <sname, fname, true>;
+	for (s <- format.structures) {
+		for (f <- s.fields) {
+			order += <s.name, f.name, true>;
+			top-down visit(f) {
+				case Scalar sc : env = makeReferenceEnvironment(sc, s.name, f.name, env, order);
+			}
 		}
-		case Scalar s : env = makeReferenceEnvironment(s, sname, fname, env, order);
 	}
+	
 	return env;
 }
 
@@ -73,7 +79,6 @@ public RefEnv makeReferenceEnvironment(ref(sourceField), Id sname, Id fname, Ref
 public default RefEnv makeReferenceEnvironment(Scalar _, Id _, Id _, RefEnv env, rel[Id struct, Id field, bool seen] _)
 	= env;
 
-//target struct == source struct, check in call
 public RefEnv makeReferenceRef(Id sname, Id fname, RefEnv env, rel[Id struct, Id field, bool seen] order)
 	= env + res
 	when !isEmpty(order[sname, fname]),
@@ -86,21 +91,17 @@ public rel[Id, Id, Dependency] makeDependencyEnvironment(Format format) {
 	rel[Id struct, Id field, Id dep] env = {};
 	rel[Id struct, Id field, int count] order = {};
 	DepEnv deps = {};
-	Id sname = id("");
-	Id fname = id("");
 	int count = 0;
 
-	top-down visit (format) {
-		case struct(name, _): {
-			sname = name;
-			count = 0;
-		}
-		case Field f : {
-			fname = f.name;
-			order += <sname, fname, count>;
+	for (s <- format.structures) {
+		count = 0;
+		for (f <- s.fields) {
+			order += <s.name, f.name, count>;
 			count += 1;
+			top-down-break visit(f) {
+				case Scalar sc : env = makeDependencyEnvironment(sc, s.name, f.name, env, order);
+			}
 		}
-		case Scalar scal : env = makeDependencyEnvironment(scal, sname, fname, env, order);
 	}
 	
 	for (<struct, field> <- env<0, 1>) {
@@ -108,6 +109,7 @@ public rel[Id, Id, Dependency] makeDependencyEnvironment(Format format) {
 		Dependency dep = dependency([v.val | t <- order, <struct, Id v, mx> := t][0]);
 		deps += <struct, field, dep>;
 	}
+	
 	return deps;
 }
 

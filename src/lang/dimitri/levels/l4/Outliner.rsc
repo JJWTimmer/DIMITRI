@@ -1,5 +1,4 @@
 module lang::dimitri::levels::l4::Outliner
-
 extend lang::dimitri::levels::l3::Outliner;
 
 import lang::dimitri::levels::l4::Implode;

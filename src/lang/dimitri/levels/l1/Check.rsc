@@ -17,7 +17,7 @@ public set[Message] check(f:format(name, extensions, defaults, sequence, structu
 	= checkDuplicateStructureNames(structures)
 	+ checkUndefinedSequenceNames(sequence.symbols, structures)
 	+ checkDuplicateFieldNames(structures)
-	+ checkRefs(structures, ctx.fields);
+	+ checkRefs(f, ctx.fields);
 
 public set[Message] checkDuplicateStructureNames(list[Structure] ls) =
 	{error("duplicate structure name: <sname.val>", sname@location) | struct(sname, _) <- ls, structs[sname] > 1}
@@ -42,12 +42,13 @@ public set[Message] checkDuplicateFieldNames(list[Field] fields) =
 	{error("duplicate fieldname: <fname.val>", fname@location) | field(fname, _, _) <- fields, fieldnames[fname] > 1}
 	when fieldnames := distribution([fname | field(fname, _, _) <- fields]);
 
-public set[Message] checkRefs(list[Structure] structs, rel[Id, Id] fields) = {*checkRefs(struct, fields) | struct <- structs};
+public set[Message] checkRefs(Format fmt, rel[Id, Id] fields) =
+	{*checkRefs(struct, fields) | struct <- fmt.structures}
+	+ {error("Refs not allowed in defaults", s@location) | /Scalar s <- fmt.defaults, ref(_) := s};
 public set[Message] checkRefs(Structure struct, rel[Id, Id] fields) = {*checkRefs(field, fields, struct.name) | field <- struct.fields};
-public default set[Message] checkRefs(Field f, rel[Id, Id] fields, Id sname) =
-	{*checkRefs(val, fields, sname) | val <- f.values}
-	+ {*checkRefs(val, fields, sname) | variableSpecifier(_, val) <- f.format};
-public set[Message] checkRefs(ref(source), rel[Id, Id] fields, Id sname) =
-	{error("Sourcefield does not exist: <sname.val>.<source.val>", source@location) }
+public set[Message] checkRefs(Field f, rel[Id, Id] fields, Id sname) = {*checkRefs(r, fields, sname) | /r:ref(_) <- f};
+public set[Message] checkRefs(r:ref(source), rel[Id, Id] fields, Id sname) =
+	{error("Sourcefield does not exist: <sname.val>.<source.val>", r@location) }
 	when source notin fields[sname];
 public default set[Message] checkRefs(Scalar _, rel[Id, Id] _, Id _) = {};
+

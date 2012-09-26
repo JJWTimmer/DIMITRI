@@ -24,7 +24,7 @@ public void registerL4() {
 		popup(
 			menu("Dimitri",
 				[
-					//action("Compile Format", void (Tree tree, loc selection) { compileL4(selection); }),
+					action("Compile Format", void (Tree tree, loc selection) { compileL4(selection); }),
 					action("Format && Remove Comments", void (Tree tree, loc selection) { prettyPrintFile(selection); })
 				]
 			)

@@ -1,5 +1,5 @@
-format l4t2
-extension t24
+format Level4
+extension l4t2
 
 type integer
 endian big

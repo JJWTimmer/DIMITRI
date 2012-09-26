@@ -2,10 +2,12 @@ module lang::dimitri::levels::l1::prettyPrinting::Format2box
 
 import lang::box::util::Box;
 import List;
+import Set;
 import String;
 
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::prettyPrinting::BoxHelper;
+import lang::dimitri::levels::l1::compiler::Annotate;
 
 map[str,str] mapping = ("*":"_");
 
@@ -17,7 +19,7 @@ public Box format2box(Format f) =
     structs2box(f.structures)
   ])[@vs=1];
 
-public Box id2box(Id id) = VAR(L(id.val));
+public Box id2box(Id id) = VAR(L(escape(id.val, mapping)));
 
 public Box formatheader2box(Id name, list[Id] extensions)
 	= V([
@@ -39,7 +41,7 @@ public Box scalar2box(hex(val)) = NM(L(val));
 public Box scalar2box(oct(val)) = NM(L(val));
 public Box scalar2box(bin(val)) = NM(L(val));
 public Box scalar2box(string(val)) = STRING(L("\"<val>\""));
-public Box scalar2box(ref(val)) = VAR(L(val.val));
+public Box scalar2box(ref(val)) = id2box(val);
 public default Box scalar2box(Scalar s) { throw "unknow scalar: <s>"; }
 
 
@@ -95,20 +97,60 @@ public Box field2box(fieldRaw(id(fname), fieldValue(list[Scalar] values, format)
 public Box field2box(fieldNoValue(id(fname)) )
 	= H([VAR(L(escape(fname, mapping))), L(";")])[@hs=0];
 
-public Box field2box(field(id(fname), [], {}) )
-	= H([VAR(L(escape(fname, mapping))), L(";")])[@hs=0];
+//public Box field2box(fld:field(id(fname), [], {}) ) {
+//	ref = "";
+//	refdep = "";
+//	if (fld@ref?) ref = "<fld@ref>";
+//	if (fld@refdep?) refdep = "<fld@refdep>";
+//	
+//	str comment = "/* ";
+//	
+//	if (size(ref) > 0)
+//		comment += "ref=<ref> ";
+//	if (size(refdep) > 0)
+//		comment += "refdep=<refdep>";
+//		
+//	comment += " */";
+//	
+//	return H([VAR(L(escape(fname, mapping))), L(";")]+ (annos ? [COMM(L(comment))] : []))[@hs=0];
+//
+//}
 
-public default Box field2box(Field fld)
-	= H([
+public default Box field2box(Field fld) {
+	str rf = "";
+	str rfd = "";
+	if (fld@ref?)
+		rf = "<fld@ref>";
+	if (fld@refdep?)
+		rfd = "<fld@refdep>";
+	
+	str comment = "/* ";
+	
+	bool annos = false;
+	
+	if (size(rf) > 0) {
+		annos = true;
+		comment += "ref=<rf> ";
+	}
+	if (size(rfd) > 0) {
+		annos = true;
+		comment += "refdep=<rfd>";
+	}
+	
+	comment += " */";
+	
+	return H([
 		VAR(L(escape(fld.name.val, mapping))),
-		L(": "),
+		L( (size(fld.values) > 0 || size(getLocalFormat(fld.format)) > 0) ? ": " : ""),
 		H([
-			H([
-				*hsepList(fld.values, ", ", scalar2box)
-			])[@hs=0],
-			H([
-				*hsepList(fld.format, " ", format2box)
-			])[@hs=0]
-		])[@hs=1],
+			*hsepList(fld.values, ", ", scalar2box)
+		])[@hs=0],
+		H([
+			*hsepList(getLocalFormat(fld.format), " ", format2box)
+		])[@hs=0],
 		L(";")
-	])[@hs=0];
+	] + (annos ? [COMM(L(comment))] : [])
+	)[@hs=0];
+}
+
+public set[FormatSpecifier] getLocalFormat(set[FormatSpecifier] fmt) = {fm | fm <- fmt, fm@local?, fm@local};

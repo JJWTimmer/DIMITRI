@@ -1,0 +1,31 @@
+format level5
+extension l5t2
+
+
+sequence
+ s1
+ s2
+ s3
+structures
+
+s1 {
+  a: 1;
+  b: "ab";
+  c: 1,2,3;
+  d: offset(c);
+  e: lengthOf(c);
+}
+
+s2 {
+  a: size 2;
+  b: size a;
+  c: lengthOf(s1.c);
+  d: offset(s1.d);
+}
+
+s3 {
+  a;
+  b: size a;
+  c: lengthOf(b);
+  d: offset(c);
+}

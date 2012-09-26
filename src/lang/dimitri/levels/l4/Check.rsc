@@ -10,11 +10,11 @@ public rel[Id, Id, Field] getCompleteFields(Structure::struct(sname, fields)) = 
 
 public set[Message] checkErrorsL4(Format f) = checkErrorsL4(f, ctx(getFields(f), getCompleteFields(f)));
 
-public set[Message] checkErrorsL4(format(name, extensions, defaults, sequence, structures), Context cntxt)
+public set[Message] checkErrorsL4(f:format(name, extensions, defaults, sq, structures), Context cntxt)
 	= checkDuplicateStructureNames(structures)
-	+ checkUndefinedSequenceNames(sequence.symbols, structures)
+	+ checkUndefinedSequenceNames(sq.symbols, structures)
 	+ checkDuplicateFieldNames(structures)
-	+ checkRefs(structures, cntxt.fields)
+	+ checkRefs(f, cntxt.fields)
 	+ typeCheckScalars(defaults, structures, cntxt);
 
 public set[Message] typeCheckScalars(set[FormatSpecifier] defaults, list[Structure] structs, Context cntxt)

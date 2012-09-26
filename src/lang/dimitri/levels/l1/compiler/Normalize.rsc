@@ -1,9 +1,5 @@
 module lang::dimitri::levels::l1::compiler::Normalize
 
-/*
-	I was desugar
-*/
-
 import Set;
 import List;
 import String;
@@ -20,8 +16,6 @@ public Format normalize(Format format) = format4 when
 	format4 := sequence2dnf(format3);
 
 
-/////////////////////////////////////
-
 private Format removeMultipleExpressions(Format format) {
 	str getFName(int i, str fname) {
 		if (i > 0) {
@@ -35,7 +29,7 @@ private Format removeMultipleExpressions(Format format) {
 			if (f has values, f.values != []) {
 				int i = 0;
 				for (c <- f.values) {
-					append ret: field(id(getFName(i, f.name.val)), [c], f.format);
+					append ret: field(id(getFName(i, f.name.val)), [c], f.format)[@parent=(i > 0 ? f.name.val : "" )];
 					i += 1;
 				}
 			} else append f;
@@ -74,7 +68,7 @@ private list[Field] expandStrings(str sname, list[Field] fields) {
 			
 			int i = 0;
 			for (c <- chars(sval)) {
-				append ret: field(id(getFName(i, fname)), [number(c)], localformat);
+				append ret: field(id(getFName(i, fname)), [number(c)], localformat)[@parent=(i > 0 ? fname : "" )];
 				i += 1;
 			}
 		}

@@ -1,5 +1,4 @@
 module lang::dimitri::levels::l3::prettyPrinting::Format2box
-
 extend lang::dimitri::levels::l2::prettyPrinting::Format2box;
 
 import lang::dimitri::levels::l3::AST;
@@ -26,26 +25,42 @@ public Box field2box(fieldRaw(id(fname), fieldValue(Callback cb, format)))
 	])[@hs=0];
 
 	
-public Box field2box(field(id(fname), Callback cb, set[FormatSpecifier] format))
-	= H([
+public Box field2box(fld:field(id(fname), Callback cb, set[FormatSpecifier] format)) {
+	str rf = "";
+	str rfd = "";
+	if (fld@ref?)
+		rf = "<fld@ref>";
+	if (fld@refdep?)
+		rfd = "<fld@refdep>";
+	
+	str comment = "/* ";
+	
+	bool annos = false;
+	
+	if (size(rf) > 0) {
+		annos = true;
+		comment += "ref=<rf> ";
+	}
+	if (size(rfd) > 0) {
+		annos = true;
+		comment += "refdep=<rfd>";
+	}
+	
+	comment += " */";
+		
+	return H([
 		VAR(L(escape(fname, mapping))),
 		L(": "),
 		H([
 			callback2box(cb),
 			H([
-				*hsepList(format, " ", format2box)
+				*hsepList(getLocalFormat(format), " ", format2box)
 			])[@hs=0]
 		])[@hs=1],
 		L(";")
-	])[@hs=0];
-
-public Box field2box(field(id(fname), Callback cb, {}))
-	= H([
-		VAR(L(escape(fname, mapping))),
-		L(": "),
-		callback2box(cb),
-		L(";")
-	])[@hs=0];
+	] + (annos ? [COMM(L(comment))] : [])
+	)[@hs=0];
+}
 
 public Box callback2box(callback(func(id(funcname)), set[Parameter] params))
 	= H([

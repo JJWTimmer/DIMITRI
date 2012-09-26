@@ -15,16 +15,20 @@ private Format expandSpecification(Format format)
 		case struct(sname, fields) => expandSpecification(sname, fields, format)
 	};
 
-private Structure expandSpecification(Id sname, list[Field] fields, Format format) = struct(sname, [expandSpecification(sname, fld, format) | fld <- fields]);
+private Structure expandSpecification(Id sname, list[Field] fields, Format format)
+	= struct(sname, [expandSpecification(sname, fld, format) | fld <- fields]);
 
-private Field expandSpecification(Id sname, field(fname, cb, fmt), Format format) = field(fname, expandSpecification(sname, fname, cb, format), fmt); 
-private default Field expandSpecification(Field f) = f; 
+private Field expandSpecification(Id sname, field(fname, Callback cb, fmt), Format format)
+	= field(fname, expandSpecification(sname, fname, cb, format), fmt); 
+private default Field expandSpecification(Id _, Field f, Format _) = f; 
 
-private Callback expandSpecification(Id sname, Id fname, Callback cb, Format format) = visit(cb) {
+private Callback expandSpecification(Id sname, Id fname, Callback cb, Format format)
+	= visit(cb) {
 		case list[Scalar] ss => expandSpecification(sname, fname, ss, format)
 	};
 
-private list[Scalar] expandSpecification(Id sname, Id fname, list[Scalar] ss, Format format) = [*expandSpecification(sname, fname, scal, format) | scal <- ss];
+private list[Scalar] expandSpecification(Id sname, Id fname, list[Scalar] ss, Format format)
+	= [*expandSpecification(sname, fname, scal, format) | scal <- ss];
 
 private list[Scalar] expandSpecification(Id sname, Id fname, ref(sourceField), Format format) 
 	= getFieldlist(sname, sourceField, format);
@@ -43,6 +47,5 @@ private list[Scalar] getFieldlist(Id sname, Id fname, Format format) {
 	return [crossRef(sname, fld.name) | fld <- res];
 }
 
-//FIXME: do not use regex here
 private list[Field] getFields(str fname, list[Field] fields)
-	= [f | f <- fields, ( (/<fname>/ := f.name.val) || (/<fname>\*.+/ := f.name.val) )];
+	= [f | f <- fields, fname == f.name.val] + [f | f <- fields, f@parent?, f@parent == fname];

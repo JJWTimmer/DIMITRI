@@ -18,9 +18,9 @@ import lang::dimitri::levels::l3::compiler::Normalize;
 
 public void compile(Format ast, str packageName) {
 	ast = propagateDefaults(ast);
-	ast = normalizeL3(ast);
+	ast = normalizeL3(ast);text(ast);
 	ast = propagateConstants(ast);
-	ast = annotate(ast);
+	ast = annotateL2(ast);
 	
 //text(ast);
 

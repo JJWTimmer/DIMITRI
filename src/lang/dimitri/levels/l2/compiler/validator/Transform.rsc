@@ -18,7 +18,6 @@ public VValue generateScalar(str struct, crossRef(id(sname), id(fname))) = var("
 
 public list[Global] getGlobals(Format format) {
 	list[Global] globals = [];
-	sname = "";
 	
 	top-down visit(format) {
 		case struct(id(sn), fields) : globals = getGlobals(sn, fields, globals);

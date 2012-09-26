@@ -1,0 +1,17 @@
+format l5t1
+extension t15
+
+sequence
+ s1
+
+structures
+
+s1 {
+  a: 1;
+  b: a;
+  c: "c";
+  d: lengthOf(c) + offset(z);
+  e: offset(-1..-6);
+  f: lengthOf(s1.b) sign true size 2;
+  g: offset(5)+5+"goo";
+}

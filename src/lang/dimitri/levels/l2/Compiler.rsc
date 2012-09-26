@@ -19,7 +19,7 @@ public void compile(Format ast, str packageName) {
 	ast = propagateDefaults(ast);
 	ast = normalize(ast);
 	ast = propagateConstants(ast);
-	ast = annotate(ast);
+	ast = annotateL2(ast);
 	
 //text(ast);
 

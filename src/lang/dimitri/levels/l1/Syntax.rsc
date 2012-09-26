@@ -8,15 +8,15 @@ lexical Comment = @category="Comment" "/*" CommentChar* "*/";
 lexical LAYOUT = whitespace: [\t-\n \r \ ] | Comment;
 layout LAYOUTLIST = LAYOUT* !>> [\t-\n \r \ ];
 
-keyword DerricKeywords =
+keyword DimitriKeywords =
    "format"
  | "extension"
  | "sequence"
  | "structures"
- | "unit" | "sign" | "endian" | "strings" | "type"
+ | "unit" | "sign" | "endian" | "strings" | "type" | "size"
  | "big" | "little" | "true" | "false" | "byte" | "bit" | "ascii" | "utf8" | "integer" | "string";
 
-lexical Id = id: ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DerricKeywords;
+lexical Id = id: ([a-z A-Z _] !<< [a-z A-Z _][a-z A-Z 0-9 _]* !>> [a-z A-Z 0-9 _]) \ DimitriKeywords;
 syntax ExpressionId = @category="Identifier" Id;
  
 lexical Integer =  [0-9]+ !>> [0-9];
