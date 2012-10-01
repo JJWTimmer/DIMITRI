@@ -49,8 +49,8 @@ private str generateValueSet(list[VValue] le, str vs) {
 	return ret;
 }
 
-private str generateValueExpression(bits(str var)) = var;
-private str generateValueExpression(bytes(str var)) = "8 * <var>";
+private str generateValueExpression(bits(var(vname))) = vname;
+private str generateValueExpression(bytes(var(vname))) = "8 * <vname>";
 private str generateValueExpression(var(str n)) = n;
 private str generateValueExpression(con(int i)) = (i <= 2147483647) ? "<i>" : "<i>l";
 

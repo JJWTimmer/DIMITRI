@@ -1,0 +1,157 @@
+format png5
+extension png
+
+type integer
+endian big
+sign false
+size 1
+strings ascii
+unit byte
+
+sequence
+ Signature
+ IHDR
+ (cHRM pHYs sPLT iCCP iTXt zTXt sBIT sRGB tIME tEXt gAMA)*
+ PLTE?
+ (tRNS hIST pHYs sPLT iTXt bKGD zTXt tIME tEXt)*
+ IDAT
+ IDAT*
+ (iTXt zTXt tIME tEXt)*
+ IEND
+
+structures
+
+Signature {
+  marker: 137, 80, 78, 71, 13, 10, 26, 10;
+}
+
+IHDR {
+  length: (offset(crc)-lengthOf(length)-lengthOf(chunktype)) size 4;
+  chunktype: "IHDR";
+  width: !(0) size 4;
+  height: !(0) size 4;
+  bitdepth: 1|2|4|8|16;
+  colourtype: 0|2|3|4|6;
+  compression: 0;
+  filter: 0;
+  interlace: 0|1;
+  crc: size 4;
+}
+
+IDAT {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "IDAT";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+IEND {
+  length: 0 size 4;
+  chunktype: "IEND";
+  crc: 0xAE, 0x42, 0x60, 0x82;
+}
+
+PLTE {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "PLTE";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+cHRM {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "cHRM";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+gAMA {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "gAMA";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+iCCP {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "iCCP";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+sBIT {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "sBIT";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+sRGB {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "sRGB";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+bKGD {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "bKGD";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+hIST {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "hIST";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+tRNS {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "tRNS";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+pHYs {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "pHYs";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+sPLT {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "sPLT";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+tIME {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "tIME";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+iTXt {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "iTXt";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+tEXt {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "tEXt";
+  chunkdata: size length;
+  crc: size 4;
+}
+
+zTXt {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: "zTXt";
+  chunkdata: size length;
+  crc: size 4;
+}

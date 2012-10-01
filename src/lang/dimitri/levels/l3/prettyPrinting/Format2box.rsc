@@ -26,24 +26,16 @@ public Box field2box(fieldRaw(id(fname), fieldValue(Callback cb, format)))
 
 	
 public Box field2box(fld:field(id(fname), Callback cb, set[FormatSpecifier] format)) {
-	str rf = "";
-	str rfd = "";
-	if (fld@ref?)
-		rf = "<fld@ref>";
-	if (fld@refdep?)
-		rfd = "<fld@refdep>";
-	
 	str comment = "/* ";
 	
 	bool annos = false;
 	
-	if (size(rf) > 0) {
+	annomap = getAnnotations(fld);
+	for (an <- annomap) {
+		if (an != "location") {
 		annos = true;
-		comment += "ref=<rf> ";
-	}
-	if (size(rfd) > 0) {
-		annos = true;
-		comment += "refdep=<rfd>";
+			comment += " <an>=<annomap[an]>";
+		}
 	}
 	
 	comment += " */";

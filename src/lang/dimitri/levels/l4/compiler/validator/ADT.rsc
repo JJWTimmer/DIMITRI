@@ -8,4 +8,5 @@ data VValue = sub(VValue lhs, VValue rhs)
 			| pow(VValue base, VValue exp)
 			| neg(VValue exp)
 			| not(VValue exp)
-			| range(VValue lower, VValue upper);
+			| range(VValue lower, VValue upper)
+			;

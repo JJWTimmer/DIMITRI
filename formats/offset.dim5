@@ -1,0 +1,17 @@
+format offset_fail
+extension ofs
+
+sequence
+	s1
+	s2
+
+structures
+s1 {
+	a;
+	b: size a;
+	c;
+}
+
+s2 {
+	a: offset(s1.c);
+}

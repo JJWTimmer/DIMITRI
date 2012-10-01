@@ -6,12 +6,15 @@ sequence
  s1
  s2
  s3
+ s4
+ s5
+
 structures
 
 s1 {
   a: 1;
   b: "ab";
-  c: 1,2,3;
+  c: 1, 2, 3;
   d: offset(c);
   e: lengthOf(c);
 }
@@ -28,4 +31,19 @@ s3 {
   b: size a;
   c: lengthOf(b);
   d: offset(c);
+}
+
+s4 {
+  a: size 2;
+  b: size a;
+  c: lengthOf(b);
+  d: offset(c);
+  e: lengthOf(g);
+  f: offset(g);
+  g;
+}
+
+s5 {
+  a: lengthOf(s4.g);
+  b: size offset(s4.g);
 }

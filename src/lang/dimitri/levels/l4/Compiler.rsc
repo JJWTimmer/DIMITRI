@@ -6,13 +6,13 @@ import util::ValueUI;
 
 import lang::dimitri::levels::l1::compiler::PropagateDefaults;
 
-import lang::dimitri::levels::l2::compiler::Annotate;
 
 import lang::dimitri::levels::l3::compiler::Normalize;
 
 import lang::dimitri::levels::l4::AST;
 import lang::dimitri::levels::l4::prettyPrinting::PrettyPrinting;
 import lang::dimitri::levels::l4::compiler::PropagateConstants;
+import lang::dimitri::levels::l4::compiler::Annotate;
 import lang::dimitri::levels::l4::compiler::validator::ADT;
 import lang::dimitri::levels::l4::compiler::validator::Transform;
 import lang::dimitri::levels::l4::compiler::validator::Generate;

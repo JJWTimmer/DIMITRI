@@ -11,7 +11,7 @@ import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::compiler::Annotate;
 import lang::dimitri::levels::l1::compiler::validator::ADT;
 
-data EType = \value() | size();
+data EType = \value();
 
 map[str,str] mapping = ("*":"_");
 
@@ -105,7 +105,6 @@ public Type makeType(Field f) {
 
 public VValue generateScalar(str struct, ref(id(name))) = var("<struct>_<name>");
 public VValue generateScalar(str struct, number(int i)) = con(i);
-public default VValue generateScalar(str struct, x) { throw "generateScalar: unknown Scalar type: <x>"; }
 
 public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format) = variableSizeFields2statements(sname, field, frefs) when field has values, isVariableSize(field);
 public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format) = fixedSizefields2statements(sname, field, frefs) when field has values, !isVariableSize(field);
@@ -121,14 +120,12 @@ public list[Statement] variableSizeFields2statements (str sname, Field field, FR
 	if (/variableSpecifier("size", val) := field.format) sourceSizeField = val;
 	str relType;
 	if (/formatSpecifier("type", val) := field.format) relType = val;
-	relativeSize = (relType == "byte") ? bytes(generateScalar(sname, sourceSizeField).name) : bits(generateScalar(sname, sourceSizeField).name);
+	relativeSize = (relType == "byte") ? bytes(generateScalar(sname, sourceSizeField)) : bits(generateScalar(sname, sourceSizeField));
 	statements += calc(lenName, relativeSize);
-	
-	for (Statement s <- frefs[sname,fname,size()]) statements += s;
 	
 	if ((field@ref)?) {
 		str bufName = "<sname>_<fname>";
-		if (local := field@ref) statements += ldeclB(bufName);
+		if (local() := field@ref) statements += ldeclB(bufName);
 		statements += readBuffer(lenName, bufName);
 	} else {
 		statements += skipBuffer(lenName);

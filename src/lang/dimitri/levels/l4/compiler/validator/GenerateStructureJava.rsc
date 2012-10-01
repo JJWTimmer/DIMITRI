@@ -3,6 +3,9 @@ extend lang::dimitri::levels::l3::compiler::validator::GenerateStructureJava;
 
 import lang::dimitri::levels::l4::compiler::validator::ADT;
 
+public str generateValueExpression(bits(VValue exp)) = generateValueExpression(exp);
+public str generateValueExpression(bytes(VValue exp)) = "(8 * (<generateValueExpression(exp)>))";
+public str generateValueExpression(sub(VValue l, VValue r)) = "(<generateValueExpression(l)>-<generateValueExpression(r)>)";
 public str generateValueExpression(sub(VValue l, VValue r)) = "(<generateValueExpression(l)>-<generateValueExpression(r)>)";
 public str generateValueExpression(add(VValue l, VValue r)) = "(<generateValueExpression(l)>+<generateValueExpression(r)>)";
 public str generateValueExpression(fac(VValue l, VValue r)) = "(<generateValueExpression(l)>*<generateValueExpression(r)>)";

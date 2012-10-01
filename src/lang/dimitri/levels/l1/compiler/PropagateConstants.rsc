@@ -22,18 +22,18 @@ public Format propagateConstants(Format format) {
 public Structure propagateConstants(Id sname, list[Field] fields, rel[Id s, Id f, Field v] smap) =
 	struct(sname, newFields)
 	when newFields := visit (fields) {
-		case field(fname, list[Scalar] values, format) =>
+		case field(fname, list[Scalar] values, format) => //typing of values because of callback
 			field(fname, getVals(sname, values, smap), getVals(sname, format, smap))
 	};
 
 public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, Field] specMap) =
-	visit(originalValues) {
+	top-down-break visit(originalValues) {
 		case [Scalar s] => getVals(sname, s, specMap)
 	};
 	
 public set[FormatSpecifier] getVals(Id sname, set[FormatSpecifier] format, rel[Id, Id, Field] specMap) =
-	visit(format) {
-		case Scalar s => val when [val] := getVals(sname, s, specMap) 
+	top-down-break visit(format) {
+		case Scalar s => getVals(sname, s, specMap)[0] 
 	};
 
 public list[Scalar] getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = theField.values when

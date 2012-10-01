@@ -4,6 +4,7 @@ import lang::box::util::Box;
 import List;
 import Set;
 import String;
+import Node;
 
 import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::prettyPrinting::BoxHelper;
@@ -117,24 +118,16 @@ public Box field2box(fieldNoValue(id(fname)) )
 //}
 
 public default Box field2box(Field fld) {
-	str rf = "";
-	str rfd = "";
-	if (fld@ref?)
-		rf = "<fld@ref>";
-	if (fld@refdep?)
-		rfd = "<fld@refdep>";
-	
 	str comment = "/* ";
 	
 	bool annos = false;
 	
-	if (size(rf) > 0) {
+	annomap = getAnnotations(fld);
+	for (an <- annomap) {
+		if (an != "location") {
 		annos = true;
-		comment += "ref=<rf> ";
-	}
-	if (size(rfd) > 0) {
-		annos = true;
-		comment += "refdep=<rfd>";
+			comment += " <an>=<annomap[an]>";
+		}
 	}
 	
 	comment += " */";
@@ -143,11 +136,13 @@ public default Box field2box(Field fld) {
 		VAR(L(escape(fld.name.val, mapping))),
 		L( (size(fld.values) > 0 || size(getLocalFormat(fld.format)) > 0) ? ": " : ""),
 		H([
-			*hsepList(fld.values, ", ", scalar2box)
-		])[@hs=0],
-		H([
-			*hsepList(getLocalFormat(fld.format), " ", format2box)
-		])[@hs=0],
+			H([
+				*hsepList(fld.values, ", ", scalar2box)
+			])[@hs=0],
+			H([
+				*hsepList(getLocalFormat(fld.format), " ", format2box)
+			])[@hs=0]
+		])[@hs=1],
 		L(";")
 	] + (annos ? [COMM(L(comment))] : [])
 	)[@hs=0];

@@ -14,10 +14,15 @@ public Format annotateFieldRefsL2(Format format) =
 	when refenv := makeReferenceEnvironment(format),
 	refdepenv := makeDependencyEnvironment(format);
 
-public Structure annotateFieldRefsL2(Id sname, list[Field] fields, RefEnv refenv, DepEnv refdepenv)
-	= struct(sname, annoFields) when
-	annoFields := [getDepAnnotation(sname, getRefAnnotationL2(sname, f, refenv), refdepenv) | f <- fields];
-	
+public Structure annotateFieldRefsL2(Id sname, list[Field] fields, RefEnv refenv, DepEnv refdepenv) {
+	annoFields = for ( f <- fields) {
+		nf = getRefAnnotationL2(sname, f, refenv);
+		nf = getDepAnnotation(sname, nf, refdepenv);
+		append nf;
+	}
+	return struct(sname, annoFields);
+}
+
 public Field getRefAnnotationL2(Id sname, Field fld, RefEnv env)
 	= fld[@ref=global()]
 	when annotation := env[sname, fld.name],
@@ -31,16 +36,16 @@ public Field getRefAnnotationL2(Id sname, Field fld, RefEnv env)
 public default Field getRefAnnotationL2(Id sname, Field fld, RefEnv env)
 	= fld;
 
-
-
+//------------------------------------------------------------------------
 
 public rel[Id, Id, Id] makeDependencyEnvironment(crossRef(sourceStruct, sourceField), sourceStruct, Id fname, rel[Id, Id, Id] env, rel[Id, Id, int] order)
 	= env;
 
-///////////////////////////////////////
+//------------------------------------------------------------------------
 
-public RefEnv makeReferenceEnvironment(crossRef(sourceStruct, sourceField), Id sname, Id fname, RefEnv env, rel[Id, Id, bool] order) =
-	makeReferenceRef(sourceStruct, sourceField, env) when sourceStruct != sname;
+public RefEnv makeReferenceEnvironment(crossRef(sourceStruct, sourceField), Id sname, Id fname, RefEnv env, rel[Id, Id, bool] order)
+	= makeReferenceRef(sourceStruct, sourceField, env)
+	when sourceStruct != sname;
 
 public RefEnv makeReferenceEnvironment(crossRef(struct, source), struct, Id fname, RefEnv env, rel[Id, Id, bool] order)
 	= makeReferenceRef(struct, source, env, order);
