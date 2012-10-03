@@ -15,3 +15,8 @@ s1 {
 s2 {
 	a: offset(s1.c);
 }
+
+s3 {
+	foo;
+	test: s1.c;
+}

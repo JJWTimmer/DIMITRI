@@ -3,7 +3,7 @@ extend lang::dimitri::levels::l4::Check;
 
 import lang::dimitri::levels::l5::AST;
 
-public set[Message] checkErrorsL5(Format f) = checkErrorsL5(f, ctx(getFields(f), getCompleteFields(f)));
+public set[Message] checkErrorsL5(start[Format] f) = checkErrorsL5(f.top, ctx(getFields(f), getCompleteFields(f)));
 
 public set[Message] checkErrorsL5(f:format(name, extensions, defaults, sq, structures), Context cntxt)
 	= checkDuplicateStructureNames(structures)
