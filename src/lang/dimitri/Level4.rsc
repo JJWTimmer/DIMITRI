@@ -12,9 +12,9 @@ import lang::dimitri::levels::l4::AST;
 import lang::dimitri::levels::l4::prettyPrinting::PrettyPrinting;
 import lang::dimitri::levels::l4::Compiler;
 
-public str LANG = "Dimitri L4";
-public str EXT  = "dim4";
-public str PACKAGE = "org.dimitri_lang.generated";
+str LANG = "Dimitri L4";
+str EXT  = "dim4";
+str PACKAGE = "org.dimitri_lang.generated";
 
 public void registerL4() {
 	registerLanguage(LANG, EXT, parseL4);
@@ -42,7 +42,7 @@ public Format implodeL4(Tree t) = implode(t);
 public Tree checkL4(Tree t) = t[@messages=checkErrorsL4(ast)] when ast := implodeL4(t);
 
 public void compileL4(loc file) {
-	tree = parse(file);
+	tree = parse(file).top;
 	ast = implode(tree);
 	messages = checkErrorsL4(ast);
 	if (messages != {}) {

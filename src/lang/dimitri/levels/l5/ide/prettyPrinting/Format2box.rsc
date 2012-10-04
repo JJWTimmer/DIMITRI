@@ -1,4 +1,4 @@
-module lang::dimitri::levels::l5::prettyPrinting::Format2box
+module lang::dimitri::levels::l5::ide::prettyPrinting::Format2box
 extend lang::dimitri::levels::l4::prettyPrinting::Format2box;
 
 import lang::dimitri::levels::l5::AST;

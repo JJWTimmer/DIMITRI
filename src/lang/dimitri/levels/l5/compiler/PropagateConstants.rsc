@@ -66,7 +66,7 @@ public Scalar getValsL5L5(Id sname, Scalar s, rel[Id, Id, Field] specMap) {
 			if (sname != struct, ref(_) := size)
 				size = crossRef(struct, size.field);
 			else if(crossRef(_,_) !:= size)
-				size = getVals(sname, size, specMap);
+				size = getValsL5(sname, size, specMap);
 			
 			//if we are a lengthOf for a normal value, and the target size is a ref to us, return the original value
 			if( (!sname@format? || (sname@format? && !sname@format)), sname@field?) {
@@ -115,13 +115,13 @@ public Scalar getValsL5L5(Id sname, Scalar s, rel[Id, Id, Field] specMap) {
 			
 			if ([ref(nextRef)] := res)
 				res = [crossRef(struct, nextRef)];
-			else if([crossRef(_,_)] !:= res)
-				res = [getVals(sname, res[0], specMap)];
+			else if([crossRef(_,_)] !:= res, size(res) > 0)
+				res = [getValsL5(sname, res[0], specMap)];
 		
 			//if we are a ref in a size value, and the target is a lengthOf us, return original value 
 			if(sname@format?, sname@format, sname@field?) {
 				fld = sname@field;
-				if ((sname == struct && [lengthOf(ref(fld))] := res) || [lengthOf(crossRef(sname, fld))] := theField.values) {
+				if ((sname == struct && [lengthOf(ref(fld))] := res) || [lengthOf(crossRef(sname, fld))] := res) {
 					breaking = true;
 				}
 			}

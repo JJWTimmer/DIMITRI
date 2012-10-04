@@ -1,4 +1,4 @@
-module lang::dimitri::levels::l5::prettyPrinting::ImplodeNoDesugar
+module lang::dimitri::levels::l5::ide::prettyPrinting::ImplodeNoDesugar
 
 import ParseTree;
 

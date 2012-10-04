@@ -19,6 +19,7 @@ public loc T24 = |project://dimitri/formats/test2.dim4|;
 public loc T15 = |project://dimitri/formats/test1.dim5|;
 public loc T25 = |project://dimitri/formats/test2.dim5|;
 public loc PNG1 = |project://dimitri/formats/png.dim1|;
+public loc PNG5 = |project://dimitri/formats/png.dim5|;
 
 public void main() {
 	registerL1();
@@ -38,9 +39,10 @@ public void generateAll() {
 			case "dim2" : compileL2(format);
 			case "dim3" : compileL3(format);
 			case "dim4" : compileL4(format);
-			//case "dim5" : compileL5(format);
+			case "dim5" : compileL5(format);
 			default 	: ;
 		}
+		println("Generated: <file>");
 	}
 	println("Done.");
 }

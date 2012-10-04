@@ -12,9 +12,9 @@ import lang::dimitri::levels::l2::prettyPrinting::PrettyPrinting;
 import lang::dimitri::levels::l2::Check;
 import lang::dimitri::levels::l2::Compiler;
 
-public str LANG = "Dimitri L2";
-public str EXT  = "dim2";
-public str PACKAGE = "org.dimitri_lang.generated";
+str LANG = "Dimitri L2";
+str EXT  = "dim2";
+str PACKAGE = "org.dimitri_lang.generated";
 
 public void registerL2() {
 	registerLanguage(LANG, EXT, parseL2);
