@@ -11,7 +11,7 @@ import lang::dimitri::levels::l4::compiler::validator::Generate;
 
 import lang::dimitri::levels::l5::AST;
 import lang::dimitri::levels::l5::compiler::Normalize;
-import lang::dimitri::levels::l5::ide::prettyPrinting::PrettyPrinting;
+import lang::dimitri::levels::l5::prettyPrinting::PrettyPrinting;
 import lang::dimitri::levels::l5::compiler::PropagateConstants;
 import lang::dimitri::levels::l5::compiler::Annotate;
 import lang::dimitri::levels::l5::compiler::validator::Transform;

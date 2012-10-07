@@ -4,13 +4,16 @@ import ParseTree;
 import util::IDE;
 import IO;
 
-import lang::dimitri::levels::l3::Outliner;
+import lang::dimitri::levels::l3::ide::Outliner;
 import lang::dimitri::levels::l3::Check;
 import lang::dimitri::levels::l3::Parse;
 import lang::dimitri::levels::l3::Implode;
 import lang::dimitri::levels::l3::AST;
 import lang::dimitri::levels::l3::prettyPrinting::PrettyPrinting;
 import lang::dimitri::levels::l3::Compiler;
+
+public loc T13 = |project://dimitri/formats/test1.dim3|;
+public loc T23 = |project://dimitri/formats/test2.dim3|;
 
 str LANG = "Dimitri L3";
 str EXT  = "dim3";

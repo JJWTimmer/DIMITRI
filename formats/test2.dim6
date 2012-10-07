@@ -1,5 +1,5 @@
-format l6t1
-extension t16
+format level6
+extension l6t2
 
 
 sequence
@@ -11,8 +11,6 @@ structures
 
 s1 {
   a: 1;
-  b: "a"|"b";
-  c: terminatedBy "foo";
   d: terminatedBefore 2|4|8;
 }
 

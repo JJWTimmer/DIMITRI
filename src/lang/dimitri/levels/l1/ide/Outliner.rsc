@@ -1,4 +1,4 @@
-module lang::dimitri::levels::l1::Outliner
+module lang::dimitri::levels::l1::ide::Outliner
 
 import util::IDE; // outline annos
 import ParseTree;

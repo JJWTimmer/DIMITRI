@@ -8,9 +8,13 @@ import lang::dimitri::levels::l1::AST;
 import lang::dimitri::levels::l1::Parse;
 import lang::dimitri::levels::l1::Implode;
 import lang::dimitri::levels::l1::prettyPrinting::PrettyPrinting;
-import lang::dimitri::levels::l1::Outliner;
+import lang::dimitri::levels::l1::ide::Outliner;
 import lang::dimitri::levels::l1::Check;
 import lang::dimitri::levels::l1::Compiler;
+
+public loc T11 = |project://dimitri/formats/test1.dim1|;
+public loc T21 = |project://dimitri/formats/test2.dim1|;
+public loc PNG1 = |project://dimitri/formats/png.dim1|;
 
 str LANG = "Dimitri L1";
 str EXT  = "dim1";

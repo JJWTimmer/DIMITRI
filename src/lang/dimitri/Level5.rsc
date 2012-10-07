@@ -10,9 +10,12 @@ import lang::dimitri::levels::l5::Check;
 import lang::dimitri::levels::l5::Parse;
 import lang::dimitri::levels::l5::Implode;
 import lang::dimitri::levels::l5::AST;
-import lang::dimitri::levels::l5::ide::prettyPrinting::PrettyPrinting;
+import lang::dimitri::levels::l5::prettyPrinting::PrettyPrinting;
 import lang::dimitri::levels::l5::Compiler;
 
+public loc T15 = |project://dimitri/formats/test1.dim5|;
+public loc T25 = |project://dimitri/formats/test2.dim5|;
+public loc PNG5 = |project://dimitri/formats/png.dim5|;
 
 str LANG = "Dimitri L5";
 str EXT  = "dim5";

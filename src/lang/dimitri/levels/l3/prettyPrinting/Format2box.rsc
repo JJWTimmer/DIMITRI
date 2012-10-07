@@ -24,8 +24,9 @@ public Box field2box(fieldRaw(id(fname), fieldValue(Callback cb, format)))
 		L(";")
 	])[@hs=0];
 
-	
-public Box field2box(fld:field(id(fname), Callback cb, set[FormatSpecifier] format)) {
+public Box field2box(Field fld) = callbackfield2box(fld) when fld has callback;
+
+public Box callbackfield2box(fld:field(id(fname), Callback cb, set[FormatSpecifier] format)) {
 	str comment = "/* ";
 	
 	bool annos = false;
@@ -33,7 +34,7 @@ public Box field2box(fld:field(id(fname), Callback cb, set[FormatSpecifier] form
 	annomap = getAnnotations(fld);
 	for (an <- annomap) {
 		if (an != "location") {
-		annos = true;
+			annos = true;
 			comment += " <an>=<annomap[an]>";
 		}
 	}

@@ -3,6 +3,12 @@ extend lang::dimitri::levels::l5::AST;
 
 data FieldSpecifier = fieldTerminatedBy(list[Scalar] values, set[FormatSpecifier] format)
 					| fieldTerminatedBefore(list[Scalar] values, set[FormatSpecifier] format)
-					| fieldTerminatedBy(list[Scalar] values)
-					| fieldTerminatedBefore(list[Scalar] values)
+					| fieldTerminatedBefore(Callback call, set[FormatSpecifier] format)
+					| fieldTerminatedBy(Callback call, set[FormatSpecifier] format)
+					;
+
+anno TerminatorSpec Field@terminator;
+
+data TerminatorSpec = by()
+					| before()
 					;
