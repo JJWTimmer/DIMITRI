@@ -6,11 +6,36 @@ import Node;
 import lang::dimitri::levels::l6::AST;
 
 public Format normalizeL6(Format format) = format4 when
-	format1 := removeMultipleExpressions(format),
+	format1 := removeMultipleExpressionsL6(format),
 	format2 := removeStrings(format1),
 	format2b := expandSpecificationL6(format2),
 	format3 := removeNotSequence(format2b),
 	format4 := sequence2dnf(format3);
+
+private Format removeMultipleExpressionsL6(Format format) {
+	str getFName(int i, str fname) {
+		if (i > 0) {
+			fname += "*<i>";
+		}
+		return fname;
+	}
+
+	list[Field] expandMultipleExpressions(list[Field] fields) {
+		return ret:for (f <- fields) {
+			if (f has values, f.values != []) {
+				int i = 0;
+				for (c <- f.values) {
+					append ret: f[name=id(getFName(i, f.name.val))][values=[c]][@parent=(i > 0 ? f.name.val : "" )];
+					i += 1;
+				}
+			} else append f;
+		};
+	}
+
+	return visit (format) {
+		case s:struct(name, fields) => s[fields=expandMultipleExpressions(fields)]
+	}
+}
 
 private Format expandSpecificationL6(Format format)
 	= visit (format) {

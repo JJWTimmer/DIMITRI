@@ -5,7 +5,6 @@ extension l6t2
 sequence
  s1
  s2
- s3
 
 structures
 
@@ -15,12 +14,8 @@ s1 {
 }
 
 s2 {
-  xy;
-  foorbar: 123;
-  bazz: size xy;
-}
-
-s3 {
-  a: terminatedBy rot13(data="cwi", alg="known");
-  b: terminatedBefore rot13(data="cwi", alg="known") sign false size 2;
+  xy: terminatedBy 1+2+3;
+  yz;
+  foorbar: 1+2+3;
+  bazz: size yz;
 }

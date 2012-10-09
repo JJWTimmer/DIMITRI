@@ -56,3 +56,10 @@ public str generateStructureL4(skipBuffer(str s), int i) = "if (_input.skip(<s>)
 public str generateStructureL4(validate(str v, list[VValue] l), int i)
 	= "<generateValueSetL4(l, "vs<i>")>
 	  '		if (!vs<i>.equals(<v>)) return noMatch();";
+public str generateStructureL4(validateContent(str v, str l, str n, map[str, str] configuration, map[str, list[VValue]] arguments, bool allowEOF), int i)
+	= "<makeStringMap("content1_<i>", configuration)><makeExpressionMap("content2_<i>", arguments)>org.dimitri_lang.runtime.level1.Content content3_<i> = _input.validateContent(<l>, \"<n>\", content1_<i>, content2_<i>, allowEOF || <allowEOF>);
+	  'if (!content3_<i>.validated) return noMatch();
+	  '<v>.fragments.add(content3_<i>.data);
+	  '<l> = <v>.getLast().length;
+	  '";
+public default str generateStructureL4(Statement s, int _) { throw "Unknown statement: <s>"; }

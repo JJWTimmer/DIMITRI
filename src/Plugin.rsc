@@ -5,8 +5,8 @@ import IO;
 import lang::dimitri::Level1;
 import lang::dimitri::Level2;
 import lang::dimitri::Level3;
-//import lang::dimitri::Level4;
-//import lang::dimitri::Level5;
+import lang::dimitri::Level4;
+import lang::dimitri::Level5;
 
 public void main() {
 	registerL1();
@@ -25,9 +25,9 @@ public void generateAll() {
 		switch (format.extension) {
 			case "dim1" : compileL1(format);
 			case "dim2" : compileL2(format);
-			//case "dim3" : compileL3(format);
-			//case "dim4" : compileL4(format);
-			//case "dim5" : compileL5(format);
+			case "dim3" : compileL3(format);
+			case "dim4" : compileL4(format);
+			case "dim5" : compileL5(format);
 			default 	: def = true;
 		}
 		if (!def)

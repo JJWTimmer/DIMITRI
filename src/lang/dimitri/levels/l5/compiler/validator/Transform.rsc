@@ -7,7 +7,12 @@ import lang::dimitri::levels::l5::AST;
 
 data EType = size();
 
-public Validator getValidatorL5(Format format) = validator(toUpperCase(format.name.val) + "Validator", format.name.val, getGlobalsL5(format), getStructuresL5(format));
+public Validator getValidatorL5(Format format)
+	= validator(
+		toUpperCase(format.name.val) + "Validator",
+		format.name.val,
+		getGlobalsL5(format),
+		getStructuresL5(format));
 
 public list[Global] getGlobalsL5(Format format) {
 	list[Global] globals = [];
@@ -65,6 +70,7 @@ public list[Structure] getStructuresL5(Format format) {
 
 public list[Statement] field2statementsL5 (str sname, Field field, FRefs frefs, Format format) = variableSizeFields2statementsL5(sname, field, frefs) when field has values, isVariableSize(field);
 public list[Statement] field2statementsL5 (str sname, Field field, FRefs frefs, Format format) = fixedSizefields2statementsL5(sname, field, frefs) when field has values, !isVariableSize(field);
+public list[Statement] field2statementsL5 (str sname, Field field, FRefs frefs, Format format) = callbackFields2statementsL5(sname, field, frefs, format) when field has callback;
 
 public VValue generateScalar(str struct, lengthOf(ref(id(fname))))
 	= var("<struct>_<fname>_len");

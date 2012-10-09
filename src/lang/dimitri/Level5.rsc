@@ -48,7 +48,7 @@ public Format implodeL5(Tree t) = implode(t);
 public Tree checkL5(Tree t) = t[@messages=checkErrorsL5(ast)] when ast := implodeL5(t);
 
 public void compileL5(loc file) {
-	tree = parse(file);
+	tree = parse(file).top;
 	ast = implode(tree);
 	messages = checkErrorsL5(ast);
 	if (messages != {}) {

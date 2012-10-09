@@ -106,8 +106,14 @@ public Type makeType(Field f) {
 public VValue generateScalar(str struct, ref(id(name))) = var("<struct>_<name>");
 public VValue generateScalar(str struct, number(int i)) = con(i);
 
-public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format) = variableSizeFields2statements(sname, field, frefs) when field has values, isVariableSize(field);
-public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format) = fixedSizefields2statements(sname, field, frefs) when field has values, !isVariableSize(field);
+public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format)
+	= variableSizeFields2statements(sname, field, frefs)
+	when field has values,
+	isVariableSize(field);
+public list[Statement] field2statements (str sname, Field field, FRefs frefs, Format format)
+	= fixedSizefields2statements(sname, field, frefs)
+	when field has values,
+	!isVariableSize(field);
 
 public list[Statement] variableSizeFields2statements (str sname, Field field, FRefs frefs) {
 	list[Statement] statements = [];

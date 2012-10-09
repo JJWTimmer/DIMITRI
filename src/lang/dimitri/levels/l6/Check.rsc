@@ -19,8 +19,8 @@ public set[Message] checkErrorsL6(f:format(name, extensions, defaults, sq, struc
 public set[Message] checkTerminators(list[Structure] structs, Context cntxt)
 	= {*checkTerminators(fld, struct.name, cntxt) | struct <- structs, fld <- struct.fields};
 public set[Message] checkTerminators(Field f, Id sname, Context cntxt)
-	= {error("Cannot use a terminator modifier on strings or multi valued fields", f@location)}
+	= {error("Cannot use a terminator modifier on strings, callbacks or multi valued fields", f@location)}
 	when f@terminator?,
-	f has values,
-	size(f.values) > 1 || any( v <- f.values, containsString(v, sname, cntxt));
+	f has values && (size(f.values) > 1 || any( v <- f.values, containsString(v, sname, cntxt)))
+	|| f has callback;
 public default set[Message] checkTerminators(Field f, Id _, Context _) = {};
