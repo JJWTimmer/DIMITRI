@@ -7,6 +7,8 @@ import lang::dimitri::Level2;
 import lang::dimitri::Level3;
 import lang::dimitri::Level4;
 import lang::dimitri::Level5;
+import lang::dimitri::Level6;
+import lang::dimitri::Level7;
 
 public void main() {
 	registerL1();
@@ -14,6 +16,8 @@ public void main() {
 	registerL3();
 	registerL4();
 	registerL5();
+	registerL6();
+	registerL7();
 }
 
 public void generateAll() {
@@ -28,6 +32,8 @@ public void generateAll() {
 			case "dim3" : compileL3(format);
 			case "dim4" : compileL4(format);
 			case "dim5" : compileL5(format);
+			case "dim6" : compileL6(format);
+			case "dim7" : compileL7(format);
 			default 	: def = true;
 		}
 		if (!def)

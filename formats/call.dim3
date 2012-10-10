@@ -1,0 +1,10 @@
+format calltest
+extension foo
+
+sequence
+ S1
+
+structures
+S1 {
+  a: foo(bar=1+2+3);
+}

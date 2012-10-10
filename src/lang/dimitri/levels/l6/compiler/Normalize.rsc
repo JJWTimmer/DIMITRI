@@ -2,13 +2,16 @@ module lang::dimitri::levels::l6::compiler::Normalize
 extend lang::dimitri::levels::l5::compiler::Normalize;
 
 import Node;
+import util::ValueUI;
 
 import lang::dimitri::levels::l6::AST;
 
 public Format normalizeL6(Format format) = format4 when
-	format1 := removeMultipleExpressionsL6(format),
+	format1 := removeMultipleExpressions(format),
 	format2 := removeStrings(format1),
-	format2b := expandSpecificationL6(format2),
+	format2a1 := fixLengthOf(format2),
+	format2a2 := removeOffset(format2a1),
+	format2b := expandSpecificationL6(format2a2),
 	format3 := removeNotSequence(format2b),
 	format4 := sequence2dnf(format3);
 

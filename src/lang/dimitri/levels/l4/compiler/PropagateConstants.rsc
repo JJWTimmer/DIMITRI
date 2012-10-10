@@ -13,6 +13,16 @@ public Format propagateConstantsL4(Format format) {
 	}
 }
 
+public bool allowedInSize(parentheses(_)) = true;
+public bool allowedInSize(negate(_)) = true;
+public bool allowedInSize(not(_)) = false;
+public bool allowedInSize(Scalar::power(_,_)) = true;
+public bool allowedInSize(times(_,_)) = true;
+public bool allowedInSize(divide(_,_)) = true;
+public bool allowedInSize(add(_,_)) = true;
+public bool allowedInSize(minus(_,_)) = true;
+public bool allowedInSize(range(_,_)) = false;
+public bool allowedInSize(or(_,_)) = false;
 	
 public list[Scalar] getVals(Id sname, parentheses(Scalar exp), rel[Id, Id, Field] specMap)
 	= [parentheses(getVals(sname, exp, specMap)[0])];

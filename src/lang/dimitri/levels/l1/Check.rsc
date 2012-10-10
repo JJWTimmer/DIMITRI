@@ -51,4 +51,3 @@ public set[Message] checkRefs(r:ref(source), rel[Id, Id] fields, Id sname) =
 	{error("Sourcefield does not exist: <sname.val>.<source.val>", r@location) }
 	when source notin fields[sname];
 public default set[Message] checkRefs(Scalar _, rel[Id, Id] _, Id _) = {};
-

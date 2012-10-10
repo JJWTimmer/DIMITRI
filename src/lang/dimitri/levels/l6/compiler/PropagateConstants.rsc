@@ -27,5 +27,5 @@ public Structure propagateConstantsL6(Id sname, list[Field] fields, rel[Id s, Id
 
 public set[FormatSpecifier] getValsL6(Id sname, set[FormatSpecifier] format, rel[Id, Id, Field] specMap) =
 	top-down-break visit(format) {
-		case v:variableSpecifier(k, s) => v[var=getValsL5(sname, s, specMap)]
+		case v:variableSpecifier(k, s) => v[var=getValsL5(sname, s[@inFormat=true], specMap)]
 	};

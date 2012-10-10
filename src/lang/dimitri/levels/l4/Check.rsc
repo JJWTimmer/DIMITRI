@@ -1,6 +1,8 @@
 module lang::dimitri::levels::l4::Check
 extend lang::dimitri::levels::l3::Check;
 
+import util::ValueUI;
+
 import lang::dimitri::levels::l4::AST;
 
 data Context = ctx(rel[Id, Id] fields, rel[Id, Id, Field] completeFields);
@@ -25,7 +27,7 @@ public set[Message] typeCheckScalars(set[FormatSpecifier] defaults, Context cntx
 	
 public set[Message] typeCheckScalars(list[Structure] structs, Context cntxt)
 	= { *typeCheckScalars(e, st.name, cntxt) | st <- structs, f <- st.fields, f has values, e <- f.values}
-	+ { *typeCheckScalars(e, st.name, cntxt) | st <- structs, f <- st.fields, variableSpecifier(_, e) <- f.format};
+	+ { *typeCheckScalars(e, st.name, cntxt) | st <- structs, f <- st.fields, f has format, variableSpecifier(_, e) <- f.format};
 
 public set[Message] typeCheckScalars(Scalar exp, Id sname, Context cntxt)
 	= {error("String not allowed in this expression. Maybe a referenced field contains a string?", exp@location)}
@@ -72,8 +74,8 @@ public bool allowString(crossRef(sname, fname), Id _, Context cntxt)
 	{fld} := cntxt.completeFields[sname, fname],
 	fld has values,
 	[] := fld.values;
-//public default bool allowString(Scalar s, Id _, Context _) = true;
-public default bool allowString(Scalar s, Id _, Context _) { throw "Unknown Scalar <s>"; }
+public default bool allowString(Scalar s, Id _, Context _) = true;
+//public default bool allowString(Scalar s, Id _, Context _) { throw "Unknown Scalar <s>"; }
 
 public bool containsString(string(_), Id _, Context _) = true;
 public bool containsString(number(_), Id _, Context _) = false;
@@ -123,6 +125,5 @@ public bool containsString(crossRef(sourceStruct, sourceField), Id sname, Contex
 	[] := fld.values;
 
 public default bool containsString(Scalar e, Id i, Context c) {
-	int foo = 1;
 	throw "Unknown Scalar <e>";
 }

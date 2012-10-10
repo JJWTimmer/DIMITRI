@@ -28,8 +28,6 @@ public default list[VValue] generateScalar(str struct, Scalar e) {
 		orList += generateScalar(struct, r);
 		return orList;
 	} else {
-		list[VValue] orList = [];
-		orList += [generateScalar(struct, e)];
-		return orList;
+		return [generateScalar(struct, e)];
 	}
 }

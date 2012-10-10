@@ -11,10 +11,11 @@ public Format propagateDefaults(Format format) {
 	}
 }
 
-private Field resolveFieldOverrides(set[FormatSpecifier] defaults, Field field) {
-	field.format = resolveFormat(defaults, field.format, true);
-	return field;
+private Field resolveFieldOverrides(set[FormatSpecifier] defaults, fld:field(fname, _, format)) {
+	fld.format = resolveFormat(defaults, format, true);
+	return fld;
 }
+private default Field resolveFieldOverrides(set[FormatSpecifier] defaults, Field f) = f;
 
 private set[FormatSpecifier] resolveFormat(set[FormatSpecifier] base, set[FormatSpecifier] locals, bool tagLocal) =
 	visit (base) {

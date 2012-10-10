@@ -63,9 +63,18 @@ public Box callback2box(callback(func(id(funcname)), set[Parameter] params))
 		L(")")
 	])[@hs=0];
 
-public Box parameter2box(parameter(id(paramname), values))
+public Box parameter2box(pm(id(paramname), values))
 	= H([
 		VAR(L(paramname)),
 		L("="),
-		*hsepList(values, "+", scalar2box)
+		*hsepList(values, "+", argument2box)
 	])[@hs=0];
+	
+public Box argument2box(numberArg(val)) = NM(L("<val>"));
+public Box argument2box(hexArg(val)) = NM(L(val));
+public Box argument2box(octArg(val)) = NM(L(val));
+public Box argument2box(binArg(val)) = NM(L(val));
+public Box argument2box(stringArg(val)) = STRING(L("\"<val>\""));
+public Box argument2box(refArg(val)) = id2box(val);
+public Box argument2box( crossRefArg(sname, fname) ) = H([id2box(sname), L("."), id2box(fname)])[@hs=0];
+public default Box argument2box(Argument a) { throw "Unknown argument: <a>"; }

@@ -47,8 +47,6 @@ private Scalar expandLengthOf(str struct, str head, list[str] tail, bool local) 
 }
 
 public Format removeOffset(Format format) {
-	list[Field] fields = [];
-	str sname;
 	return top-down visit (format) {
 		case struct(id(name), list[Field] fs) => removeOffset(name, fs, format)
 	}

@@ -4,7 +4,7 @@ extension l3t2
 sequence
  S1
  S2
-
+S3
 structures
 
 S1 {
@@ -16,4 +16,12 @@ S2 {
   len: size 2;
   data: size len type string;
   secret: rot13(data=data,alg="unknown");
+}
+
+S3 {
+	foo: jpegdata( huffmantable=S2.len,
+		           quantizationtable=S1.a,
+		           terminator=0+1+2,
+		           terminatorsize=16,
+		           includeterminator="false");
 }

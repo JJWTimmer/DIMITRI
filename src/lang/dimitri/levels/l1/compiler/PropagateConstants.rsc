@@ -7,6 +7,8 @@ import Type;
 
 import lang::dimitri::levels::l1::AST;
 
+anno bool Scalar@inFormat;
+
 /*
 	propagate the *first* value of referenced fields
 */
@@ -33,11 +35,16 @@ public list[Scalar] getVals(Id sname, list[Scalar] originalValues, rel[Id, Id, F
 	
 public set[FormatSpecifier] getVals(Id sname, set[FormatSpecifier] format, rel[Id, Id, Field] specMap) =
 	top-down-break visit(format) {
-		case Scalar s => getVals(sname, s, specMap)[0] 
+		case Scalar s => getVals(sname, s[@inFormat=true], specMap)[0] 
 	};
 
-public list[Scalar] getVals(Id sname, ref(source), rel[Id, Id, Field] specMap) = theField.values when
-	{theField} := specMap[sname, source],
+public list[Scalar] getVals(Id sname, r:ref(source), rel[Id, Id, Field] specMap)
+	= theField.values
+	when {theField} := specMap[sname, source],
 	theField has values,
-	size(theField.values) == 1;
+	size(theField.values) == 1,
+	(!r@inFormat?) || (r@inFormat? && allowedInSize(theField.values[0]));
 public default list[Scalar] getVals(Id _, Scalar original, rel[Id, Id, Field] _) = [original];
+
+public bool allowedInSize(number(_)) = true;
+public bool allowedInSize(ref(_)) = true;

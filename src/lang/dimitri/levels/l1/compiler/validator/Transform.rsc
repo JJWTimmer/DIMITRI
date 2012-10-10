@@ -47,11 +47,12 @@ public FRefs getFRefs(Format format) {
 
 public FRefs getFRefs( Structure::struct(id(sname), list[Field] fields),FRefs frefs) = frefs + {*getFRefs(fld, sname) | fld <- fields};
 
-public FRefs getFRefs(fld:field(id(fname), list[Scalar] vals, set[FormatSpecifier] _), str sname) {
+public FRefs getFRefs(Field fld, str sname) {
 	FRefs res = {};
-	if (!isVariableSize(fld), (fld@refdep)?, dependency(str depName) := fld@refdep ) {
-		valName = "<sname>_<fname>";
-		validateStatement = validate(valName, [*generateScalar(sname, vals[0])]);
+
+	if (fld has values, !isVariableSize(fld), (fld@refdep)?, dependency(str depName) := fld@refdep ) {
+		valName = "<sname>_<fld.name.val>";
+		validateStatement = validate(valName, [*generateScalar(sname, fld.values[0])]);
 		res += <sname, depName, \value(), validateStatement>;
 	}
 	

@@ -1,0 +1,20 @@
+format l7t1
+extension t17
+
+sequence
+ s
+
+structures
+
+p {
+  a;
+  b: size a;
+  c;
+}
+
+s = p {
+  c: {
+  	c1: 1|2;
+  	c2: "boo";
+  }
+}

@@ -25,6 +25,9 @@ public Structure propagateConstantsL5(Id sname, list[Field] fields, rel[Id s, Id
 			field(fname, getValsL5(sname[@field=fname], values, smap), getValsL5(sname[@field=fname][@format=true], format, smap))
 	};
 
+public bool allowedInSize(offset(_)) = true;
+public bool allowedInSize(lengthOf(_)) = true;
+
 public list[Scalar] getValsL5(Id sname, list[Scalar] originalValues, rel[Id, Id, Field] specMap) =
 	top-down-break visit(originalValues) {
 		case [Scalar s] => [getValsL5(sname, s, specMap)]
@@ -32,7 +35,7 @@ public list[Scalar] getValsL5(Id sname, list[Scalar] originalValues, rel[Id, Id,
 
 public set[FormatSpecifier] getValsL5(Id sname, set[FormatSpecifier] format, rel[Id, Id, Field] specMap) =
 	top-down-break visit(format) {
-		case v:variableSpecifier(k, s) => setAnnotations(variableSpecifier(k, getValsL5(sname, s, specMap)), getAnnotations(v))
+		case v:variableSpecifier(k, s) => setAnnotations(variableSpecifier(k, getValsL5(sname, s[@inFormat=true], specMap)), getAnnotations(v))
 	};
 
 public Scalar getValsL5(Id sname, Scalar s, rel[Id, Id, Field] specMap) {
@@ -74,8 +77,7 @@ public Scalar getValsL5L5(Id sname, Scalar s, rel[Id, Id, Field] specMap) {
 				if((sname == struct) && (ref(fld) := size) || (crossRef(sname, fld) := size))
 					breaking = true;
 			}
-			
-			
+				
 			if (!breaking) insert size;
 			else insert l;
 		}
@@ -125,6 +127,10 @@ public Scalar getValsL5L5(Id sname, Scalar s, rel[Id, Id, Field] specMap) {
 					breaking = true;
 				}
 			}
+						
+			if (size(res) > 0, !(!s@inFormat? || (s@inFormat? && allowedInSize(res[0]))))
+				breaking = true;
+			
 			if (!breaking, size(res) > 0)
 				insert res[0];
 			else
@@ -147,7 +153,10 @@ public Scalar getValsL5L5(Id sname, Scalar s, rel[Id, Id, Field] specMap) {
 				if ([lengthOf(ref(fld))] := theField.values || [lengthOf(crossRef(sname, fld))] := theField.values) {
 					breaking = true;
 				}
-			}
+			}			
+						
+			if (size(theField.values) > 0, !(!s@inFormat? || (s@inFormat? && allowedInSize(theField.values[0]))))
+				breaking = true;
 			
 			if (!breaking, size(theField.values) > 0 )
 				insert theField.values[0];

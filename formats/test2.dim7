@@ -1,0 +1,23 @@
+format level7
+extension l7t2
+
+sequence
+ s2
+
+structures
+
+s1 {
+  a: 1;
+  b: 2;
+  c: size 3;
+  d: size a;
+}
+
+s2 = s1 {
+  b: {
+  	x;
+  	y: 1|2;
+  	z: size 3;
+  	o: offset(z);
+  }
+}

@@ -39,25 +39,25 @@ public list[Statement]  callbackFields2statements(str sname, f:field(id(fnameraw
 
 private map[str, str] getCustomArguments(set[Parameter] parameters) {
 	map[str, str] custom = ();
-	for (parameter(id(key), list[Scalar] vals)  <- parameters) {
-		custom += (key : val | string(val) <- vals );
+	for (pm(id(key), list[Scalar] vals)  <- parameters) {
+		custom += (key : val | stringArg(val) <- vals );
 	}
 	return custom;
 }
 
 private map[str, list[VValue]] getReferences(set[Parameter] parameters, str sname) {
 	map[str, list[VValue]] references = ();
-	for (parameter(id(key), list[Scalar] vals)  <- parameters) {
-		specs = [generateSpecification(sname, s) | Scalar s <- vals, string(_) !:= s];
+	for (pm(id(key), list[Scalar] vals)  <- parameters) {
+		specs = [generateSpecification(sname, s) | Scalar s <- vals, stringArg(_) !:= s];
 		if (specs != [])
 			references += (key : specs);
 	}
 	return references;
 }
 
-private VValue generateSpecification(str struct, number(int i)) = con(i);
-private VValue generateSpecification(str struct, ref(id(fname))) = var("<struct>_<escape(fname, mapping)>");
-private VValue generateSpecification(str struct, crossRef(id(sname), id(fname))) = var("<sname>_<escape(fname, mapping)>");
+private VValue generateSpecification(str struct, numberArg(int i)) = con(i);
+private VValue generateSpecification(str struct, refArg(id(fname))) = var("<struct>_<escape(fname, mapping)>");
+private VValue generateSpecification(str struct, crossRefArg(id(sname), id(fname))) = var("<sname>_<escape(fname, mapping)>");
 private default VValue generateSpecification(str _, Scalar s) {
 	throw "generateSpecification: unknown Specification <s>";
 }
