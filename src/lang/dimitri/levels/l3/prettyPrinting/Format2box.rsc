@@ -76,5 +76,5 @@ public Box argument2box(octArg(val)) = NM(L(val));
 public Box argument2box(binArg(val)) = NM(L(val));
 public Box argument2box(stringArg(val)) = STRING(L("\"<val>\""));
 public Box argument2box(refArg(val)) = id2box(val);
-public Box argument2box( crossRefArg(sname, fname) ) = H([id2box(sname), L("."), id2box(fname)])[@hs=0];
+public Box argument2box(crossRefArg(sname, fname) ) = H([id2box(sname), L("."), id2box(fname)])[@hs=0];
 public default Box argument2box(Argument a) { throw "Unknown argument: <a>"; }

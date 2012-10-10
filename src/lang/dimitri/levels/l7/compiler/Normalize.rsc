@@ -10,8 +10,9 @@ import lang::dimitri::levels::l7::AST;
 
 alias Replacements = rel[Id struct, int order, Id field, Id repl];
 
-public Format normalizeL7(Format format) = format4 when
-	format0 := removeInheritance(format),
+public Format normalizeL7(Format format)
+	= format4 
+	when format0 := removeInheritance(format),
 	format1 := removeMultipleExpressions(format0),
 	format2 := removeStrings(format1),
 	format2a1 := fixLengthOf(format2),
@@ -45,9 +46,12 @@ private Format removeInheritance(Format format) {
 	}
 
 	format = visit (format) {
-		case s:struct(Id name, list[Field] fields): s[fields=normalizeInheritance(name, fields, replacements)];
+		case s:struct(Id name, list[Field] flds) : {
+			ns = s[fields=normalizeInheritance(name, flds, replacements)];
+			insert ns;
+		}
 	}
-	
+
 	return format;
 }
 
@@ -74,9 +78,6 @@ private tuple[list[Field], Replacements] removeInheritance(Id sname, rel[Id, Id,
 	return removeInheritance(overriddenFields + (currentFields - overriddenFields), sname, replacements);
 }
 
-
-
-
 private tuple[list[Field], Replacements] removeInheritance(list[Field] fields, Id sname, Replacements replacements) {	
 	flds = ret:for (f <- fields) {
 		if (fieldOverride(Id fname, list[Field] fs) := f) {
@@ -93,13 +94,14 @@ private tuple[list[Field], Replacements] removeInheritance(list[Field] fields, I
 }
 
 private list[Field] normalizeInheritance(Id sname, list[Field] fields, Replacements replacements) {
-	return visit (fields) {
+	newFlds = visit (fields) {
 		case offset(ref(fname)) => offset(ref( resolveInheritanceOffset(sname, fname, replacements) ))
 		case offset(crossRef(struct, fname)) => offset(crossRef(struct, resolveInheritanceOffset(struct, fname)))
 		case lengthOf(ref(fname)) => resolveInheritanceLength(sname, fname, true, replacements)
 		case lengthOf(crossRef(struct, fname)) => resolveInheritanceLength(struct, fname, false, replacements)
 		case Parameter p => p[values=resolveInheritanceSpecification(sname, p, replacements)]
 	}
+	return newFlds;
 }
 
 private Id resolveInheritanceOffset(Id struct, Id name, Replacements replacements) {
@@ -120,14 +122,14 @@ private Scalar resolveInheritanceLength(Id struct, Id name, bool local, Replacem
 			return lengthOf(crossRef(struct, name));
 	} else {
 		list[Id] names = toList(override);
-		tuple[Id head, list[Id] tail] result = pop(toList(override));
+		tuple[Id head, list[Id] tail] result = pop(names);
 		return expandLengthOf(struct.val, result.head.val, unId(result.tail), local);
 	}
 }
 
 private list[Argument] resolveInheritanceSpecification(Id sname, Parameter p, Replacements replacements) {
-	return top:for (Argument arg <- p.values) {
-		if (numberArg(_) := arg) {
+	res = top:for (Argument arg <- p.values) {
+		if (numberArg(_) := arg || stringArg(_) := arg) {
 			append arg;
 		} else {
 			if (cr:crossRefArg(struct, fname) := arg) {
@@ -136,7 +138,7 @@ private list[Argument] resolveInheritanceSpecification(Id sname, Parameter p, Re
 					append top:cr;
 				} else {
 					for (n <- overrides) {
-						append top:crossRef(struct, n);
+						append top:crossRefArg(struct, n);
 					}
 				}
 			} else if (r:refArg(fname) := arg) {
@@ -145,10 +147,11 @@ private list[Argument] resolveInheritanceSpecification(Id sname, Parameter p, Re
 					append top:r;
 				} else {
 					for (n <- overrides) {
-						append top:ref(n);
+						append top:refArg(n);
 					}
 				}
 			}
 		}
 	}
+	return res;
 }

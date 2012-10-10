@@ -6,8 +6,9 @@ import util::ValueUI;
 
 import lang::dimitri::levels::l6::AST;
 
-public Format normalizeL6(Format format) = format4 when
-	format1 := removeMultipleExpressions(format),
+public Format normalizeL6(Format format)
+	= format4
+	when format1 := removeMultipleExpressions(format),
 	format2 := removeStrings(format1),
 	format2a1 := fixLengthOf(format2),
 	format2a2 := removeOffset(format2a1),
@@ -40,16 +41,21 @@ private Format removeMultipleExpressionsL6(Format format) {
 	}
 }
 
-private Format expandSpecificationL6(Format format)
-	= visit (format) {
-		case struct(sname, fields) => expandSpecificationL6(sname, fields, format)
+private Format expandSpecificationL6(Format format) {
+	nw = visit (format) {
+		case st:struct(sname, fields) => st[fields=expandSpecificationL6(sname, fields, format)]
 	};
+	return nw;
+}
 
-private Structure expandSpecificationL6(Id sname, list[Field] fields, Format format)
-	= struct(sname, [expandSpecificationL6(sname, fld, format) | fld <- fields]);
+private list[Field] expandSpecificationL6(Id sname, list[Field] fields, Format format) {
+	nw = [expandSpecificationL6(sname, fld, format) | fld <- fields];
+	return nw;
+}
 
-private Field expandSpecificationL6(Id sname, fld:field(fname, Callback cb, fmt), Format format)
-	= setAnnotations(field(fname, expandSpecification(sname, fname, cb, format), fmt), annos)
-	when annos := getAnnotations(fld); 
+private Field expandSpecificationL6(Id sname, fld:field(fname, Callback cb, _), Format format) {
+	nw = fld[callback=expandSpecification(sname, fname, cb, format)];
+	return nw;
+}
 private default Field expandSpecificationL6(Id _, Field f, Format _) = f;
 

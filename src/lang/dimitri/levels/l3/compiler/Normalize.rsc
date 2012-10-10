@@ -23,28 +23,28 @@ private Field expandSpecification(Id sname, field(fname, Callback cb, fmt), Form
 private default Field expandSpecification(Id _, Field f, Format _) = f; 
 
 private Callback expandSpecification(Id sname, Id fname, Callback cb, Format format)
-	= visit(cb) {
-		case list[Scalar] ss => expandSpecification(sname, fname, ss, format)
+	= visit (cb) {
+		case list[Argument] as => expandSpecification(sname, fname, as, format) when [] !:= as
 	};
 
-private list[Scalar] expandSpecification(Id sname, Id fname, list[Scalar] ss, Format format)
-	= [*expandSpecification(sname, fname, scal, format) | scal <- ss];
+private list[Argument] expandSpecification(Id sname, Id fname, list[Argument] as, Format format)
+	= [*expandSpecification(sname, fname, arg, format) | arg <- as];
 
-private list[Scalar] expandSpecification(Id sname, Id fname, ref(sourceField), Format format) 
+private list[Argument] expandSpecification(Id sname, Id fname, refArg(sourceField), Format format) 
 	= getFieldlist(sname, sourceField, format);
-private list[Scalar] expandSpecification(Id sname, Id fname, crossRef(sourceStruct, sourceField), Format format)  
+private list[Argument] expandSpecification(Id sname, Id fname, crossRefArg(sourceStruct, sourceField), Format format)  
 	= getFieldlist(sourceStruct, sourceField, format);
-private default list[Scalar]  expandSpecification(Id sname, Id fname, Scalar s, Format format) = [s];
+private default list[Argument]  expandSpecification(Id _, Id _, Argument s, Format _) = [s];
 
-private list[Scalar] getFieldlist(Id sname, Id fname, Format format) {
+private list[Argument] getFieldlist(Id sname, Id fname, Format format) {
 	list[Field] res = [];
 	visit (format) {
 		case struct(sname, fields) : {
-			res = getFields(fname.val, fields);
+			res = getFields(fname.val, res);
 		} 
 	}
 	
-	return [crossRef(sname, fld.name) | fld <- res];
+	return [crossRefArg(sname, fld.name) | fld <- res];
 }
 
 private list[Field] getFields(str fname, list[Field] fields)
