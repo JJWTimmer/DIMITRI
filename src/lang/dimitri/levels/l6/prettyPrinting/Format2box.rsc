@@ -96,7 +96,7 @@ public Box terminatorfield2box(Field fld) {
 	
 	annomap = getAnnotations(fld);
 	for (an <- annomap) {
-		if (an != "location" && an != "terminator") {
+		if (an != "location" && an != "terminator" && !(an == "parent" && annomap[an] == "")) {
 			annos = true;
 			comment += " <an>=<annomap[an]>";
 		}

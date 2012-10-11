@@ -33,7 +33,7 @@ public Box callbackfield2box(fld:field(id(fname), Callback cb, set[FormatSpecifi
 	
 	annomap = getAnnotations(fld);
 	for (an <- annomap) {
-		if (an != "location") {
+		if (an != "location" && !(an == "parent" && annomap[an] == "")) {
 			annos = true;
 			comment += " <an>=<annomap[an]>";
 		}

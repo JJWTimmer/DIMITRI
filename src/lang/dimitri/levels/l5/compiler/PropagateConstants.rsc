@@ -144,18 +144,18 @@ public Scalar getValsL5L5(Id sname, Scalar s, rel[Id, Id, Field] specMap) {
 			else
 				breaking = true;
 		
-			if([crossRef(_,_)] !:= theField.values, [ref(_)] !:= theField.values, [] != theField.values)
+			if(!breaking, [crossRef(_,_)] !:= theField.values, [ref(_)] !:= theField.values, [] != theField.values)
 				theField.values = getVals(sname, theField.values[0], specMap);
 		
 			//if we are a ref in a size value, and the target is a lengthOf us, return original value 
-			if(sname@format?, sname@format, sname@field?) {
+			if(!breaking, sname@format?, sname@format, sname@field?) {
 				fld = sname@field;
 				if ([lengthOf(ref(fld))] := theField.values || [lengthOf(crossRef(sname, fld))] := theField.values) {
 					breaking = true;
 				}
 			}			
 						
-			if (size(theField.values) > 0, !(!s@inFormat? || (s@inFormat? && allowedInSize(theField.values[0]))))
+			if (!breaking, size(theField.values) > 0, !(!s@inFormat? || (s@inFormat? && allowedInSize(theField.values[0]))))
 				breaking = true;
 			
 			if (!breaking, size(theField.values) > 0 )

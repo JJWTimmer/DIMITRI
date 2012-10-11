@@ -3,7 +3,8 @@ extension l7t2
 
 sequence
  s2
-
+ s3
+ 
 structures
 
 s1 {
@@ -15,9 +16,16 @@ s1 {
 
 s2 = s1 {
   b: {
-  	x;
+  	x: 1;
   	y: 1|2;
   	z: size 3;
-  	o: offset(z);
+  	o: offset(d);
   }
+}
+
+s3 = s2 {
+  c: {
+    s;
+  }
+  p: size y;
 }

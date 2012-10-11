@@ -21,7 +21,7 @@ public Format normalizeL7(Format format)
 	format3 := removeNotSequence(format2b),
 	format4 := sequence2dnf(format3);
 
-private Format removeInheritance(Format format) {
+public Format removeInheritance(Format format) {
 	//create env
 	rel[Id, Id, list[Field]] env = { };
 	for (s <- format.structures) {
@@ -55,7 +55,7 @@ private Format removeInheritance(Format format) {
 	return format;
 }
 
-private tuple[list[Field], Replacements] removeInheritance(Id sname, rel[Id, Id, list[Field]] env, Replacements replacements) {
+public tuple[list[Field], Replacements] removeInheritance(Id sname, rel[Id, Id, list[Field]] env, Replacements replacements) {
 	list[Field] currentFields = getOneFrom(env[sname,_]);
 	rel[Id parent, list[Field] flds] base = env[sname]; 
 	list[Field] baseFields = [];
@@ -78,7 +78,7 @@ private tuple[list[Field], Replacements] removeInheritance(Id sname, rel[Id, Id,
 	return removeInheritance(overriddenFields + (currentFields - overriddenFields), sname, replacements);
 }
 
-private tuple[list[Field], Replacements] removeInheritance(list[Field] fields, Id sname, Replacements replacements) {	
+public tuple[list[Field], Replacements] removeInheritance(list[Field] fields, Id sname, Replacements replacements) {	
 	flds = ret:for (f <- fields) {
 		if (fieldOverride(Id fname, list[Field] fs) := f) {
 			int i = 0;
@@ -93,8 +93,8 @@ private tuple[list[Field], Replacements] removeInheritance(list[Field] fields, I
 
 }
 
-private list[Field] normalizeInheritance(Id sname, list[Field] fields, Replacements replacements) {
-	newFlds = visit (fields) {
+public list[Field] normalizeInheritance(Id sname, list[Field] fields, Replacements replacements) {
+	newFlds = top-down-break visit (fields) {
 		case offset(ref(fname)) => offset(ref( resolveInheritanceOffset(sname, fname, replacements) ))
 		case offset(crossRef(struct, fname)) => offset(crossRef(struct, resolveInheritanceOffset(struct, fname)))
 		case lengthOf(ref(fname)) => resolveInheritanceLength(sname, fname, true, replacements)
@@ -104,7 +104,7 @@ private list[Field] normalizeInheritance(Id sname, list[Field] fields, Replaceme
 	return newFlds;
 }
 
-private Id resolveInheritanceOffset(Id struct, Id name, Replacements replacements) {
+public Id resolveInheritanceOffset(Id struct, Id name, Replacements replacements) {
 	set[Id] override = (replacements[struct, 0]+)[name] & bottom(replacements[struct, 0]+);
 	if (isEmpty(override)) {
 		return name;
@@ -113,7 +113,7 @@ private Id resolveInheritanceOffset(Id struct, Id name, Replacements replacement
 	}
 }
 
-private Scalar resolveInheritanceLength(Id struct, Id name, bool local, Replacements replacements) {
+public Scalar resolveInheritanceLength(Id struct, Id name, bool local, Replacements replacements) {
 	set[Id] override = (replacements[struct, _]+)[name] & bottom(replacements[struct, _]+);
 	if (isEmpty(override)) {
 		if (local)
@@ -127,7 +127,7 @@ private Scalar resolveInheritanceLength(Id struct, Id name, bool local, Replacem
 	}
 }
 
-private list[Argument] resolveInheritanceSpecification(Id sname, Parameter p, Replacements replacements) {
+public list[Argument] resolveInheritanceSpecification(Id sname, Parameter p, Replacements replacements) {
 	res = top:for (Argument arg <- p.values) {
 		if (numberArg(_) := arg || stringArg(_) := arg) {
 			append arg;

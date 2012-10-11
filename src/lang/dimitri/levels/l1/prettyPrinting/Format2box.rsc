@@ -124,7 +124,8 @@ public default Box field2box(Field fld) {
 	
 	annomap = getAnnotations(fld);
 	for (an <- annomap) {
-		if (an != "location") {
+	
+		if (an != "location" && !(an == "parent" && annomap[an] == "")) {
 		annos = true;
 			comment += " <an>=<annomap[an]>";
 		}

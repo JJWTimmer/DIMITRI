@@ -40,7 +40,7 @@ public bool allowString(string(_), Id _, Context _) = true;
 public bool allowString(parentheses(Scalar exp), Id sname, Context cntxt) = allowString(exp, sname, cntxt);
 public bool allowString(negate(Scalar _), Id _, Context _) = false;
 public bool allowString(not(Scalar exp), Id sname, Context cntxt) = allowString(exp, sname, cntxt);
-public bool allowString(power(Scalar _, Scalar _), Id _, Context _) = false;
+public bool allowString(Scalar::power(Scalar _, Scalar _), Id _, Context _) = false;
 public bool allowString(times(Scalar _, Scalar _), Id _, Context _) = false;
 public bool allowString(divide(Scalar _, Scalar _), Id _, Context _) = false;
 public bool allowString(add(Scalar _, Scalar _), Id _, Context _) = false;
@@ -82,7 +82,7 @@ public bool containsString(number(_), Id _, Context _) = false;
 public bool containsString(parentheses(Scalar exp), Id sname, Context cntxt) = containsString(exp, sname, cntxt);
 public bool containsString(negate(Scalar exp), Id sname, Context cntxt) = containsString(exp, sname, cntxt);
 public bool containsString(not(Scalar exp), Id sname, Context cntxt) = containsString(exp, sname, cntxt);
-public bool containsString(power(Scalar lhs, Scalar rhs), Id sname, Context cntxt)
+public bool containsString(Scalar::power(Scalar lhs, Scalar rhs), Id sname, Context cntxt)
 	= containsString(lhs, sname, cntxt) || containsString(rhs, sname, cntxt);
 public bool containsString(times(Scalar lhs, Scalar rhs), Id sname, Context cntxt)
 	= containsString(lhs, sname, cntxt) || containsString(rhs, sname, cntxt);
