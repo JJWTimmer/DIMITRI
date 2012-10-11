@@ -12,22 +12,22 @@ public str generateStructure(validateContent(str v, str l, str n, map[str, str] 
 	
 
 private str makeExpressionMap(str n, map[str, list[VValue]] m) {
-	str ret = "java.util.HashMap\<String, java.util.List\<Object\>\> <n> = new java.util.HashMap\<String, java.util.List\<Object\>\>();";
+	str ret = "java.util.HashMap\<String, java.util.List\<Object\>\> <n> = new java.util.HashMap\<String, java.util.List\<Object\>\>();\n";
 
 	int i = 0;
 	for (k <- m) {
-		ret += "java.util.ArrayList\<Object\> <n>_<i> = new java.util.ArrayList\<Object\>();";
+		ret += "java.util.ArrayList\<Object\> <n>_<i> = new java.util.ArrayList\<Object\>();\n";
 		for (VValue v <- m[k]) {
 			ret += getMapVal(v, n, i);
 		}
-		ret += "<n>.put(\"<k>\", <n>_<i>);";
+		ret += "<n>.put(\"<k>\", <n>_<i>);\n";
 		i += 1;
 	}
 	return ret;
 }
 
-public str getMapVal(var(str v), str n, int i) = "<n>_<i>.add(<v>);";
-public str getMapVal(con(int t), str n, int i) = "<n>_<i>.add(<t>);";
+public str getMapVal(var(str v), str n, int i) = "<n>_<i>.add(<v>);\n";
+public str getMapVal(con(int t), str n, int i) = "<n>_<i>.add(<t>);\n";
 
 public default str getMapVal(VValue s) {
 	throw "Unknown VValue <s>";

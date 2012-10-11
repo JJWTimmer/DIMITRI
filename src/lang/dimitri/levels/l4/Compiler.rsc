@@ -21,7 +21,7 @@ public void compile(Format ast, str packageName) {
 	ast = propagateDefaults(ast);
 	ast = normalizeL3(ast);
 	ast = propagateConstantsL4(ast);
-	ast = annotateL2(ast);
+	ast = annotateL3(ast);
 
 	writeFile(|project://dimitri/formats/debug/<ast.name.val>.dim4|, prettyPrint(ast));
 

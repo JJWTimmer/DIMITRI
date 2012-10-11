@@ -39,7 +39,7 @@ public list[Statement]  callbackFields2statements(str sname, f:field(id(fnameraw
 
 private map[str, str] getCustomArguments(set[Parameter] parameters) {
 	map[str, str] custom = ();
-	for (pm(id(key), list[Scalar] vals)  <- parameters) {
+	for (pm(id(key), list[Argument] vals)  <- parameters) {
 		custom += (key : val | stringArg(val) <- vals );
 	}
 	return custom;
@@ -47,8 +47,8 @@ private map[str, str] getCustomArguments(set[Parameter] parameters) {
 
 private map[str, list[VValue]] getReferences(set[Parameter] parameters, str sname) {
 	map[str, list[VValue]] references = ();
-	for (pm(id(key), list[Scalar] vals)  <- parameters) {
-		specs = [generateSpecification(sname, s) | Scalar s <- vals, stringArg(_) !:= s];
+	for (pm(id(key), list[Argument] vals)  <- parameters) {
+		specs = [generateSpecification(sname, s) | Argument s <- vals, stringArg(_) !:= s];
 		if (specs != [])
 			references += (key : specs);
 	}

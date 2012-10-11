@@ -1,5 +1,5 @@
 module lang::dimitri::levels::l4::compiler::Annotate
-extend lang::dimitri::levels::l2::compiler::Annotate;
+extend lang::dimitri::levels::l3::compiler::Annotate;
 
 import lang::dimitri::levels::l4::AST;
 

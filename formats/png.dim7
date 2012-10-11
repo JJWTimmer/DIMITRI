@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-format png
+format png7
 extension png
 
 strings ascii

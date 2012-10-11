@@ -16,6 +16,7 @@ import lang::dimitri::levels::l7::Compiler;
 
 public loc T17 = |project://dimitri/formats/test1.dim7|;
 public loc T27 = |project://dimitri/formats/test2.dim7|;
+public loc PNG7 = |project://dimitri/formats/png.dim7|;
 
 str LANG = "Dimitri L7";
 str EXT  = "dim7";

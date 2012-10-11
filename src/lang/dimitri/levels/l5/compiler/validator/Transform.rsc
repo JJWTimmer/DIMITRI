@@ -95,10 +95,8 @@ public list[Statement] variableSizeFields2statementsL5 (str sname, Field field, 
 	for (Statement s <- frefs[sname,fname,size()]) statements += s;
 	
 	if ((field@ref)?) {
-		str bufName = "<struct>_<name>";
-		if (global() := field@ref)
-			globals += gdeclB(bufName);
-		else
+		str bufName = "<struct>_<fname>";
+		if (local() := field@ref)
 			statements += ldeclB(bufName);
 		statements += readBuffer(lenName, bufName);
 	} else {

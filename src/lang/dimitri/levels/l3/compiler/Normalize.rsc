@@ -30,11 +30,15 @@ private Callback expandSpecification(Id sname, Id fname, Callback cb, Format for
 private list[Argument] expandSpecification(Id sname, Id fname, list[Argument] as, Format format)
 	= [*expandSpecification(sname, fname, arg, format) | arg <- as];
 
-private list[Argument] expandSpecification(Id sname, Id fname, refArg(sourceField), Format format) 
-	= getFieldlist(sname, sourceField, format);
-private list[Argument] expandSpecification(Id sname, Id fname, crossRefArg(sourceStruct, sourceField), Format format)  
-	= getFieldlist(sourceStruct, sourceField, format);
+private list[Argument] expandSpecification(Id sname, Id fname, r:refArg(sourceField), Format format) 
+	= selectVal(ls, r)
+	when ls := getFieldlist(sname, sourceField, format);
+private list[Argument] expandSpecification(Id sname, Id fname, cr:crossRefArg(sourceStruct, sourceField), Format format)  
+	= selectVal(ls, cr)
+	when ls := getFieldlist(sourceStruct, sourceField, format);
 private default list[Argument]  expandSpecification(Id _, Id _, Argument s, Format _) = [s];
+
+private list[Argument] selectVal(list[Argument] ls, Argument arg) = isEmpty(ls) ? [arg] : ls;
 
 private list[Argument] getFieldlist(Id sname, Id fname, Format format) {
 	list[Field] res = [];
@@ -43,7 +47,7 @@ private list[Argument] getFieldlist(Id sname, Id fname, Format format) {
 			res = getFields(fname.val, res);
 		} 
 	}
-	
+
 	return [crossRefArg(sname, fld.name) | fld <- res];
 }
 

@@ -12,8 +12,8 @@ public Format annotateFieldRefsL5(Format format) =
 	visit (format) {
 		case struct(sname, fields) => annotateFieldRefsL5(sname, fields, refenv, refdepenv, sizeenv, refsizeenv)
 	}
-	when refenv := makeReferenceEnvironment(format),
-	refdepenv := makeDependencyEnvironment(format),
+	when refenv := makeReferenceEnvironmentL3(format),
+	refdepenv := makeDependencyEnvironmentL3(format),
 	sizeenv := makeSizeReferenceEnvironment(format),
 	refsizeenv := makeSizeDependencyEnvironment(format);
 

@@ -7,8 +7,8 @@ import util::ValueUI;
 import lang::dimitri::levels::l1::compiler::PropagateDefaults;
 
 import lang::dimitri::levels::l2::compiler::PropagateConstants;
-import lang::dimitri::levels::l2::compiler::Annotate;
 
+import lang::dimitri::levels::l3::compiler::Annotate;
 import lang::dimitri::levels::l3::AST;
 import lang::dimitri::levels::l3::prettyPrinting::PrettyPrinting;
 import lang::dimitri::levels::l3::compiler::validator::ADT;
@@ -18,9 +18,9 @@ import lang::dimitri::levels::l3::compiler::Normalize;
 
 public void compile(Format ast, str packageName) {
 	ast = propagateDefaults(ast);
-	ast = normalizeL3(ast);text(ast);
+	ast = normalizeL3(ast);
 	ast = propagateConstants(ast);
-	ast = annotateL2(ast);
+	ast = annotateL3(ast);
 	
 //text(ast);
 
