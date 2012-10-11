@@ -22,7 +22,9 @@ public str generateStructure(ldeclV(integer(bool sign, _, int bits), str n), int
 public str generateStructure(ldeclB(str n), int i) 	= "SubStream <n> = new SubStream();";
 public str generateStructure(calc(str n, VValue e), int i) = "<n> = <generateValueExpression(e)>;";
 public str generateStructure(readValue(Type t, str n), int i) = "<n> = <generateReadValueMethodCall(t)>;";
-public str generateStructure(readBuffer(str s, str n), int i) = "<n>.addFragment(_input, <s>);";
+public str generateStructure(readBuffer(str s, str n), int i) {
+	return "<n>.addFragment(_input, <s>);";
+}
 public str generateStructure(readUntil(Type t, list[VValue] l, bool includeTerminator), int i)
 	= "<generateValueSet(l, "vs<i>")>if (!_input.<t.sign ? "signed()" : "unsigned()">.<(littleE() := t.endian) ? "byteOrder(LITTLE_ENDIAN)" : "byteOrder(BIG_ENDIAN)">.includeMarker(<includeTerminator ? "true" : "false">).readUntil(<t.bits>, vs<i>).validated) return noMatch();";
 public str generateStructure(skipValue(Type t), int i) = "if (!_input.skipBits(<t.bits>)) return noMatch();";

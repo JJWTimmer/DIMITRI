@@ -44,7 +44,7 @@ private list[Argument] getFieldlist(Id sname, Id fname, Format format) {
 	list[Field] res = [];
 	visit (format) {
 		case struct(sname, fields) : {
-			res = getFields(fname.val, res);
+			res = getFields(fname.val, fields);
 		} 
 	}
 

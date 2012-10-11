@@ -8,7 +8,7 @@ import lang::dimitri::levels::l6::AST;
 
 public Format normalizeL6(Format format)
 	= format4
-	when format1 := removeMultipleExpressions(format),
+	when format1 := removeMultipleExpressionsL6(format),
 	format2 := removeStrings(format1),
 	format2a1 := fixLengthOf(format2),
 	format2a2 := removeOffset(format2a1),

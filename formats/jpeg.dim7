@@ -27,7 +27,7 @@ strings ascii
 sequence
   SOI
   ([APP0JFIF APP0JFXX?] [APP1 APP2?])
-  /*(SOS DQT DHT DRI SOF0 SOF2 APPX COM)*/
+  (SOS DQT DHT DRI SOF0 SOF2 APPX COM)*
   EOI
 
 structures

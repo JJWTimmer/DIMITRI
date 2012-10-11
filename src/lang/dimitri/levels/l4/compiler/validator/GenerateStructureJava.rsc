@@ -45,10 +45,14 @@ public str generateStructureL4(Structure struct) {
 }
 
 public str generateStructureL4(ldeclV(integer(bool sign, _, int bits), str n), int i) = "<generateIntegerDeclaration(sign, bits, n)>";
-public str generateStructureL4(ldeclB(str n), int i) 	= "SubStream <n> = new SubStream();";
+public str generateStructureL4(ldeclB(str n), int i) {
+	return "SubStream <n> = new SubStream();";
+}
 public str generateStructureL4(calc(str n, VValue e), int i) = "<n> = <generateValueExpression(e)>;";
 public str generateStructureL4(readValue(Type t, str n), int i) = "<n> = <generateReadValueMethodCall(t)>;";
-public str generateStructureL4(readBuffer(str s, str n), int i) = "<n>.addFragment(_input, <s>);";
+public str generateStructureL4(readBuffer(str s, str n), int i) {
+	return "<n>.addFragment(_input, <s>);";
+}
 public str generateStructureL4(readUntil(Type t, list[VValue] l, bool includeTerminator), int i)
 	= "<generateValueSetL4(l, "vs<i>")>if (!_input.<t.sign ? "signed()" : "unsigned()">.<(littleE() := t.endian) ? "byteOrder(LITTLE_ENDIAN)" : "byteOrder(BIG_ENDIAN)">.includeMarker(<includeTerminator ? "true" : "false">).readUntil(<t.bits>, vs<i>).validated) return noMatch();";
 public str generateStructureL4(skipValue(Type t), int i) = "if (!_input.skipBits(<t.bits>)) return noMatch();";
