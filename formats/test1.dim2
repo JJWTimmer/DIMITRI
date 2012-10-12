@@ -9,14 +9,14 @@ strings ascii
 unit byte
 
 sequence
- ( s2*  s3?  s1 )
+ ( s2*  s1 )
 
 structures
 
 s1 {
   a: 1;
   b: a;
-  c: z;
+  c: s2.z;
 }
 
 s2 {

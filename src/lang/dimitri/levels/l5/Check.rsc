@@ -9,7 +9,7 @@ public set[Message] checkErrorsL5(f:format(name, extensions, defaults, sq, struc
 	= checkDuplicateStructureNames(structures)
 	+ checkUndefinedSequenceNames(sq.symbols, structures)
 	+ checkDuplicateFieldNames(structures)
-	+ checkRefs(f, cntxt.fields)
+	+ checkRefsL2(f, cntxt.fields)
 	+ typeCheckScalars(defaults, structures, cntxt)
 	+ checkScalarSugar(f);
 

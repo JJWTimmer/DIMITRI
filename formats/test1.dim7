@@ -1,6 +1,7 @@
 format l7t1
 extension t17
 
+
 sequence
  s
 
@@ -8,13 +9,26 @@ structures
 
 p {
   a;
-  b: size a;
+  b;
   c;
+  d;
+  e;
 }
 
 s = p {
-  c: {
-  	c1: 1|2;
-  	c2: "boo";
+  c : { 
+    c1: 1|2;
+    b;
+    p: t;
+    q: p.x;
+  }
+  d: {
+    bar: {
+      test;
+    }
+  }
+  f : { 
+    foo;
+    ex: c1;
   }
 }

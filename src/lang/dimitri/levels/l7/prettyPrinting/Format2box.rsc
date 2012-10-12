@@ -18,7 +18,7 @@ public Box structs2boxL7(list[Structure] structs)
 
 public Box struct2boxL7(Structure::struct(sname, parent, fields))
 	= V([
-		H([VAR(L(sname.val)), L(" = "), VAR(L(parent.val)), L(" {")])[@hs=1],
+		H([VAR(L(sname.val)), L("="), VAR(L(parent.val)), L("{")])[@hs=1],
 		 I([V([fields2boxL6(fields)])[@vs=0]])[@ts=1],
 		 L("}")
 	])[@vs=0];
@@ -44,10 +44,15 @@ public Box overridefield2box(Field fld) {
 	comment += " */";
 	
 	return H([
-		VAR(L(escape(fld.name.val, mapping))),
-		L(": { "),
-		I([*fields2boxL6(fld.overrides)])[@ts=1],
-		L("}")
+		V([
+			H([
+				VAR(L(escape(fld.name.val, mapping))),
+				L(":"),
+				L("{ ")
+			])[@hs=1],
+			I([*fields2boxL6(fld.overrides)])[@vs=0],
+			L("}")
+		])[@vs=0]
 	] + (annos ? [COMM(L(comment))] : [])
 	)[@hs=0];
 }

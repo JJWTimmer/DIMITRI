@@ -16,7 +16,7 @@ public set[Message] checkErrorsL4(f:format(name, extensions, defaults, sq, struc
 	= checkDuplicateStructureNames(structures)
 	+ checkUndefinedSequenceNames(sq.symbols, structures)
 	+ checkDuplicateFieldNames(structures)
-	+ checkRefs(f, cntxt.fields)
+	+ checkRefsL2(f, cntxt.fields)
 	+ typeCheckScalars(defaults, structures, cntxt);
 
 public set[Message] typeCheckScalars(set[FormatSpecifier] defaults, list[Structure] structs, Context cntxt)

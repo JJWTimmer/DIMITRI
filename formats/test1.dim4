@@ -28,5 +28,5 @@ s1 {
 
 s2 {
   a;
-  b: rot13(alg="unknown", data=a);
+  b: rot13(alg="unknown", data=a, foe=c);
 }

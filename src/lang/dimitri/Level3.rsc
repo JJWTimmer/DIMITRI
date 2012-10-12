@@ -43,12 +43,12 @@ public Tree parseL3(loc org) = parse(org).top;
 
 public Format implodeL3(Tree t) = implode(t);
 
-public Tree checkL3(Tree t) = t[@messages=check(ast)] when ast := implode(t);
+public Tree checkL3(Tree t) = t[@messages=checkErrorsL2(ast)] when ast := implode(t);
 
 public void compileL3(loc file) {
 	tree = parse(file).top;
 	ast = implode(tree);
-	messages = check(ast);
+	messages = checkErrorsL2(ast);
 	if (messages != {}) {
 		println("There are errors:");
 		for (err <- messages) {

@@ -42,12 +42,14 @@ public set[Message] checkDuplicateFieldNames(list[Field] fields) =
 	{error("duplicate fieldname: <fname.val>", fname@location) | field(fname, _, _) <- fields, fieldnames[fname] > 1}
 	when fieldnames := distribution([fname | field(fname, _, _) <- fields]);
 
-public set[Message] checkRefs(Format fmt, rel[Id, Id] fields) =
-	{*checkRefs(struct, fields) | struct <- fmt.structures}
+public set[Message] checkRefs(Format fmt, rel[Id, Id] fields)
+	= {*checkRefs(struct, fields) | struct <- fmt.structures}
 	+ {error("Refs not allowed in defaults", s@location) | /Scalar s <- fmt.defaults, ref(_) := s};
-public set[Message] checkRefs(Structure struct, rel[Id, Id] fields) = {*checkRefs(field, fields, struct.name) | field <- struct.fields};
-public set[Message] checkRefs(Field f, rel[Id, Id] fields, Id sname) = {*checkRefs(r, fields, sname) | /r:ref(_) <- f};
-public set[Message] checkRefs(r:ref(source), rel[Id, Id] fields, Id sname) =
-	{error("Sourcefield does not exist: <sname.val>.<source.val>", r@location) }
+public set[Message] checkRefs(Structure struct, rel[Id, Id] fields)
+	= {*checkRefs(field, fields, struct.name) | field <- struct.fields};
+public set[Message] checkRefs(Field f, rel[Id, Id] fields, Id sname)
+	= {*checkRefs(sc, fields, sname) | /Scalar sc <- f};
+public set[Message] checkRefs(r:ref(source), rel[Id, Id] fields, Id sname)
+	= {error("Sourcefield does not exist: <sname.val>.<source.val>", r@location) }
 	when source notin fields[sname];
 public default set[Message] checkRefs(Scalar _, rel[Id, Id] _, Id _) = {};
