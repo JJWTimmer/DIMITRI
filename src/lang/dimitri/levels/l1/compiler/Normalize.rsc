@@ -7,7 +7,6 @@ import analysis::graphs::Graph;
 
 import lang::dimitri::levels::l1::util::IdHelper;
 import lang::dimitri::levels::l1::AST;
-import lang::dimitri::levels::l1::compiler::Strings;
 
 public Format normalize(Format format) = format4 when
 	format1 := removeMultipleExpressions(format),
